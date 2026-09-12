@@ -20,6 +20,27 @@ struct PersonaConfig: Codable, Equatable {
 
 struct VoiceRelayResult: Codable, Equatable {
     let persona: String
+    let transcript: String
+    let replacement: String
+    let audio: Data
+    let audioContentType: String
+
+    enum CodingKeys: String, CodingKey { case persona, transcript, replacement, audio, audioContentType }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        persona = try container.decode(String.self, forKey: .persona)
+        transcript = try container.decode(String.self, forKey: .transcript)
+        replacement = try container.decode(String.self, forKey: .replacement)
+        let encoded = try container.decode(String.self, forKey: .audio)
+        guard let decoded = Data(base64Encoded: encoded) else { throw RewriteAPIError.invalidResponse }
+        audio = decoded
+        audioContentType = try container.decode(String.self, forKey: .audioContentType)
+    }
+}
+
+struct VoiceSpeakResult: Codable, Equatable {
+    let persona: String
     let audio: Data
     let audioContentType: String
 
@@ -29,7 +50,7 @@ struct VoiceRelayResult: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         persona = try container.decode(String.self, forKey: .persona)
         let encoded = try container.decode(String.self, forKey: .audio)
-        guard let decoded = Data(base64Encoded: encoded) else { throw RewriteAPIError.invalidResponse }
+        guard let decoded = Data(base64Encoded: encoded), !decoded.isEmpty else { throw RewriteAPIError.invalidResponse }
         audio = decoded
         audioContentType = try container.decode(String.self, forKey: .audioContentType)
     }
@@ -55,6 +76,16 @@ enum RewriteAPI {
         try validate(response: response, data: data, failure: "Voice setup failed")
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any], let voiceID = json["voiceId"] as? String, !voiceID.isEmpty else { throw RewriteAPIError.invalidResponse }
         return voiceID
+    }
+
+    static func speakText(baseURL: String, token: String, distinctID: String, text: String, persona: String, voiceID: String? = RewriteSettings.voiceID()) async throws -> VoiceSpeakResult {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/voice/speak", token: token)
+        var body: [String: Any] = ["distinctId": distinctID, "text": text, "persona": persona]
+        if let voiceID { body["voiceId"] = voiceID }
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response, data: data, failure: "Voice playback failed")
+        return try JSONDecoder().decode(VoiceSpeakResult.self, from: data)
     }
 
     static func rewrite(baseURL: String, token: String, text: String, persona: String? = nil, surface: String? = nil, distinctID: String? = nil, conversation: [String] = []) async throws -> RewriteResult {

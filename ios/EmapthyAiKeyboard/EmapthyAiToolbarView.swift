@@ -8,6 +8,7 @@ struct EmapthyAiToolbarView: View {
             case .idle:
                 if let acknowledged = model.requestAcknowledgedLabel { acknowledgementRow(acknowledged) }
                 else if let prompt = model.requestPrompt { requestRow(prompt) }
+                else if model.voiceTranscript != nil { voiceResultCard }
                 else { idleRow }
             case .rewriting:
                 if let preview = model.state.preview, !preview.isEmpty { previewCard(preview) }
@@ -33,6 +34,10 @@ struct EmapthyAiToolbarView: View {
             Button(action: { model.voiceTapped() }) {
                 Circle().fill(model.isRecordingVoice ? Color.red : brandPrimary).frame(width: 38, height: 38).overlay(Image(systemName: model.isRecordingVoice ? "stop.fill" : "mic.fill").font(.system(size: 15, weight: .bold)).foregroundColor(.white))
             }.accessibilityLabel(model.isRecordingVoice ? "Stop \(voicePersonaLabel) voice recording" : "Record \(voicePersonaLabel) voice").accessibilityHint("Tap to record, then tap again to send")
+            Button(action: { model.speakTapped() }) {
+                Label(model.isSpeaking ? "Stop" : "Speak", systemImage: model.isSpeaking ? "stop.fill" : "speaker.wave.2.fill")
+                    .font(.system(size: 12, weight: .semibold)).foregroundColor(textPrimary).padding(.horizontal, 8).padding(.vertical, 10)
+            }.disabled(model.isRecordingVoice).background(keepButtonGray).cornerRadius(18).accessibilityIdentifier("speakDraftButton").accessibilityLabel(model.isSpeaking ? "Stop speaking" : "Speak draft")
             if model.hasFullAccess {
                 ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 6) { ForEach(model.personas, id: \.id) { personaButton($0) } } }.fixedSize(horizontal: false, vertical: true)
             } else {
@@ -47,6 +52,17 @@ struct EmapthyAiToolbarView: View {
     private func previewCard(_ preview: String) -> some View { VStack(alignment: .leading, spacing: 6) { HStack(spacing: 4) { Text("SUGGESTED REWRITE").font(.system(size: 10, weight: .bold)).foregroundColor(brandPrimary); ProgressView().scaleEffect(0.6).frame(width: 12, height: 12) }; ScrollView { Text(preview).font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("suggestionPreviewText") }.frame(maxHeight: 70) }.padding(10).background(Color.white).cornerRadius(10) }
     private func statusRow(text: String) -> some View { Text(text).font(.system(size: 12, weight: .semibold)).foregroundColor(textSecondary).frame(maxWidth: .infinity, alignment: .leading).padding(10).background(Color.white).cornerRadius(10) }
     private var reviewCard: some View { VStack(alignment: .leading, spacing: 6) { if model.state.result?.acceptable == true { Text("Already corporate — you can still send the normalized version.").font(.system(size: 12, weight: .semibold)).foregroundColor(textSecondary) }; Text("SUGGESTED REWRITE").font(.system(size: 10, weight: .bold)).foregroundColor(brandPrimary); ScrollView { Text(model.state.result?.replacement ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("suggestionText") }.frame(maxHeight: 70).accessibilityIdentifier("suggestionScrollView"); HStack(spacing: 6) { Button("Send") { model.onAccept?() }.buttonStyle(EmapthyAiActionButtonStyle(background: brandPrimary, foreground: .white)); Button("Cancel") { model.onKeepOriginal?() }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary)) }.padding(.top, 6) }.padding(10).background(Color.white).cornerRadius(10) }
+    private var voiceResultCard: some View { VStack(alignment: .leading, spacing: 6) {
+        HStack { Text("VOICE RESULT").font(.system(size: 10, weight: .bold)).foregroundColor(brandPrimary); Spacer(); Button { model.playVoiceResult() } label: { Image(systemName: "play.fill") }.accessibilityLabel("Play voice result") }
+        Text("Original").font(.system(size: 10, weight: .bold)).foregroundColor(textSecondary)
+        Text(model.voiceTranscript ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("voiceTranscript")
+        Text("Rewrite").font(.system(size: 10, weight: .bold)).foregroundColor(textSecondary)
+        Text(model.voiceReplacement ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("voiceReplacement")
+        HStack(spacing: 6) {
+            Button("Use original") { model.useVoiceOriginal() }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary)).accessibilityIdentifier("useVoiceOriginalButton")
+            Button("Use rewrite") { model.useVoiceRewrite() }.buttonStyle(EmapthyAiActionButtonStyle(background: brandPrimary, foreground: .white)).accessibilityIdentifier("useVoiceRewriteButton")
+        }
+    }.padding(10).background(Color.white).cornerRadius(10).accessibilityIdentifier("voiceResultCard") }
     private var brandPrimary: Color { Color(red: 0.3098, green: 0.2157, blue: 0.7216) }; private var textPrimary: Color { Color(red: 0.1137, green: 0.1098, blue: 0.1137) }; private var textSecondary: Color { Color(red: 0.3569, green: 0.3333, blue: 0.3961) }; private var keepButtonGray: Color { Color(white: 0.92) }
 }
 private struct EmapthyAiActionButtonStyle: ButtonStyle { let background: Color; let foreground: Color; func makeBody(configuration: Configuration) -> some View { configuration.label.font(.system(size: 14, weight: .semibold)).foregroundColor(foreground).frame(maxWidth: .infinity).padding(.vertical, 10).background(background).cornerRadius(8).opacity(configuration.isPressed ? 0.7 : 1) } }

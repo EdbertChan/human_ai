@@ -81,6 +81,24 @@ test("voice relay rejects an unsupported persona", async () => {
   assert.equal(response.status, 400);
 });
 
+test("text-to-speech preserves the draft and uses the fingerprint", async () => {
+  let speechRequest;
+  const textHandler = createHandler({ NODE_ENV: "test", ELEVENLABS_API_KEY: "eleven-test" }, {
+    synthesizeElevenLabs: async (options) => { speechRequest = options; return { audio: new Uint8Array([6, 6, 6]), contentType: "audio/mpeg" }; }
+  });
+  const draft = "this app is shit";
+  const speakResponse = await textHandler(new Request("https://example.test/v1/voice/speak", {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text: draft, persona: "corporate", distinctId: "0123456789abcdef0123456789abcdef", voiceId: "cloned_voice_123" })
+  }));
+  assert.equal(speakResponse.status, 200);
+  const spoken = await speakResponse.json();
+  assert.equal(spoken.persona, "corporate");
+  assert.deepEqual([...Buffer.from(spoken.audio, "base64")], [6, 6, 6]);
+  assert.equal(speechRequest.text, draft);
+  assert.equal(speechRequest.voiceId, "cloned_voice_123");
+});
+
 test("translation returns OpenAI audio when a tone is requested", async () => {
   const input = new Uint8Array([73, 68, 51, 4]);
   let rewriteRequest;

@@ -16,6 +16,9 @@ final class EmapthyAiToolbarModel: ObservableObject {
     @Published private(set) var isRecordingVoice = false
     @Published private(set) var voiceError: String?
     @Published private(set) var voicePersonaID = "corporate"
+    @Published private(set) var isSpeaking = false
+    @Published private(set) var voiceTranscript: String?
+    @Published private(set) var voiceReplacement: String?
 
     var onSubmit: ((String?) -> Void)?
     var onAccept: (() -> Void)?
@@ -23,11 +26,29 @@ final class EmapthyAiToolbarModel: ObservableObject {
     var onPersonaTap: ((PersonaOption) -> Void)?
     var onPersonaRequest: ((String) -> Void)?
     var onVoiceTap: (() -> Void)?
+    var onSpeakTap: (() -> Void)?
+    var onVoiceUseOriginal: (() -> Void)?
+    var onVoiceUseRewrite: (() -> Void)?
+    var onVoicePlay: (() -> Void)?
 
     func update(_ newState: ReviewFlow.State) { state = newState }
     func voiceTapped() { onVoiceTap?() }
+    func speakTapped() { onSpeakTap?() }
     func setRecordingVoice(_ recording: Bool) { isRecordingVoice = recording; if recording { voiceError = nil } }
     func setVoiceError(_ message: String) { isRecordingVoice = false; voiceError = message }
+    func setSpeaking(_ speaking: Bool) { isSpeaking = speaking; if speaking { voiceError = nil } }
+    func setVoiceResult(transcript: String, replacement: String) {
+        voiceTranscript = transcript
+        voiceReplacement = replacement
+        voiceError = nil
+    }
+    func clearVoiceResult() {
+        voiceTranscript = nil
+        voiceReplacement = nil
+    }
+    func useVoiceOriginal() { onVoiceUseOriginal?() }
+    func useVoiceRewrite() { onVoiceUseRewrite?() }
+    func playVoiceResult() { onVoicePlay?() }
     func beginPersonaLoad() { personasLoading = true; personasError = nil; personas = [] }
     func applyPersonaConfig(_ config: PersonaConfig) {
         personasLoading = false

@@ -7,7 +7,7 @@ import KeyboardKit
 // Built on KeyboardKit instead of a hand-rolled UIStackView keyboard.
 // EmapthyAiCustomKeyboardView adds our rewrite bar above KeyboardKit's own
 // toolbar rather than replacing it.
-final class KeyboardViewController: KeyboardInputViewController {
+final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAudioPlayerDelegate {
     private var flowState = ReviewFlow.createFlow()
     private var pendingResult: RewriteResult?
     // Persona chosen by the toolbar button that started the current rewrite
@@ -20,6 +20,7 @@ final class KeyboardViewController: KeyboardInputViewController {
     private var personaConfigLoaded = false
     private var voiceRecorder: AVAudioRecorder?
     private var voicePlayer: AVAudioPlayer?
+    private var pendingVoiceResult: VoiceRelayResult?
     // Only used by EmapthyAiLayoutTests to know when the async KeyboardKit
     // Pro setup (network license check) has actually finished, since a
     // snapshot taken before that races the real render.
@@ -120,6 +121,18 @@ final class KeyboardViewController: KeyboardInputViewController {
             self?.dispatch(ReviewFlow.Event(type: "KEEP_ORIGINAL_PRESSED"))
         }
         toolbarModel.onVoiceTap = { [weak self] in self?.toggleVoiceRecording() }
+        toolbarModel.onSpeakTap = { [weak self] in self?.speakCurrentDraft() }
+        toolbarModel.onVoiceUseOriginal = { [weak self] in
+            guard let self else { return }
+            self.insertVoiceText(self.pendingVoiceResult?.transcript)
+            self.toolbarModel.clearVoiceResult()
+        }
+        toolbarModel.onVoiceUseRewrite = { [weak self] in
+            guard let self else { return }
+            self.insertVoiceText(self.pendingVoiceResult?.replacement)
+            self.toolbarModel.clearVoiceResult()
+        }
+        toolbarModel.onVoicePlay = { [weak self] in self?.playVoiceResult() }
         sendProductEvent("keyboard_session_started")
         loadPersonaConfig()
         // hasFullAccess defaults to false and the idle button's text/width
@@ -352,13 +365,59 @@ final class KeyboardViewController: KeyboardInputViewController {
             guard let self else { return }
             do {
                 let result = try await RewriteAPI.relayVoice(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), audio: Data(contentsOf: url), mimeType: "audio/mp4", persona: self.toolbarModel.voicePersonaID)
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
-                try AVAudioSession.sharedInstance().setActive(true)
-                self.voicePlayer = try AVAudioPlayer(data: result.audio)
-                self.voicePlayer?.play()
-            } catch { self.toolbarModel.setVoiceError("Voice relay failed.") }
+                self.pendingVoiceResult = result
+                self.toolbarModel.setVoiceResult(transcript: result.transcript, replacement: result.replacement)
+                try self.playVoiceAudio(result.audio)
+            } catch { self.toolbarModel.setVoiceError(self.describe(error)) }
             try? FileManager.default.removeItem(at: url)
         }
+    }
+
+    private func playVoiceResult() {
+        guard let result = pendingVoiceResult else { return }
+        do { try playVoiceAudio(result.audio) }
+        catch { toolbarModel.setVoiceError(describe(error)) }
+    }
+
+    private func playVoiceAudio(_ audio: Data) throws {
+        try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+        try AVAudioSession.sharedInstance().setActive(true)
+        voicePlayer = try AVAudioPlayer(data: audio)
+        voicePlayer?.delegate = self
+        voicePlayer?.play()
+    }
+
+    private func insertVoiceText(_ text: String?) {
+        guard let text, !text.isEmpty else { return }
+        let before = textDocumentProxy.documentContextBeforeInput ?? ""
+        for _ in before { textDocumentProxy.deleteBackward() }
+        textDocumentProxy.insertText(text)
+    }
+
+    private func speakCurrentDraft() {
+        if voicePlayer?.isPlaying == true { voicePlayer?.stop(); toolbarModel.setSpeaking(false); return }
+        let text = (textDocumentProxy.documentContextBeforeInput ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { toolbarModel.setVoiceError("Type a message first."); return }
+        toolbarModel.setSpeaking(true)
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let result = try await RewriteAPI.speakText(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), text: text, persona: self.toolbarModel.voicePersonaID)
+                let session = AVAudioSession.sharedInstance()
+                try session.setCategory(.playback, mode: .spokenAudio)
+                try session.setActive(true)
+                self.voicePlayer = try AVAudioPlayer(data: result.audio)
+                self.voicePlayer?.delegate = self
+                self.voicePlayer?.play()
+            } catch {
+                self.toolbarModel.setVoiceError(self.describe(error))
+                self.toolbarModel.setSpeaking(false)
+            }
+        }
+    }
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        toolbarModel.setSpeaking(false)
     }
     private func sendDraft() {
         guard let result = pendingResult else {

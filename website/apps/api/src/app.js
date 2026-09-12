@@ -444,6 +444,36 @@ export function createHandler(env = process.env, dependencies = {}) {
       }
     }
 
+    if (request.method === "POST" && url.pathname === "/v1/voice/speak") {
+      let body;
+      try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }
+      const { text, persona = "corporate", distinctId, voiceId } = body ?? {};
+      if (typeof text !== "string" || !text.trim() || text.length > 4000 || !PERSONAS[persona] || !isValidDistinctId(distinctId)) {
+        return json(400, { error: "invalid_request", message: "distinctId, supported persona, and text are required." }, cors);
+      }
+      if (voiceId !== undefined && (typeof voiceId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(voiceId))) {
+        return json(400, { error: "invalid_request", message: "voiceId is invalid." }, cors);
+      }
+      const authorizationError = await authorizePersona(request, distinctId, persona);
+      if (authorizationError) return json(authorizationError.status, { error: authorizationError.error, message: authorizationError.message }, cors);
+      const clonedVoiceId = typeof voiceId === "string" && voiceId.trim() ? voiceId.trim() : env.ELEVENLABS_VOICE_ID;
+      if (!env.ELEVENLABS_API_KEY || !clonedVoiceId) return json(503, { error: "voice_not_configured", message: "Configure an ElevenLabs voice fingerprint on the server or device." }, cors);
+      try {
+        const spoken = await (dependencies.synthesizeElevenLabs ?? synthesizeWithElevenLabs)({
+          voiceId: clonedVoiceId,
+          text,
+          model: env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2",
+          voiceSettings: ELEVENLABS_PERSONA_SETTINGS[persona],
+          apiKey: env.ELEVENLABS_API_KEY,
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        return json(200, { persona, audio: Buffer.from(spoken.audio).toString("base64"), audioContentType: spoken.contentType }, { ...cors, "cache-control": "no-store" });
+      } catch (error) {
+        console.error("[voice-speak] provider failed", { name: error.name, message: error.message });
+        return json(502, { error: "voice_provider_failed", message: "Voice playback failed." }, cors);
+      }
+    }
+
     if (request.method === "POST" && url.pathname === "/v1/translate") {
       let body;
       try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }

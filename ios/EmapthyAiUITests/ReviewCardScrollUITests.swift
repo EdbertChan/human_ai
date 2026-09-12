@@ -301,6 +301,33 @@ final class CorporateVoiceMicrophoneUITests: XCTestCase {
         XCTAssertTrue(stop.waitForExistence(timeout: 5))
         stop.tap()
         XCTAssertTrue(app.otherElements["realKeyboardRoot"].waitForExistence(timeout: 10), "EmpathyAI keyboard disappeared during voice relay/playback")
+        XCTAssertTrue(app.buttons["Use original"].waitForExistence(timeout: 30), "Use original action was not shown")
+        XCTAssertTrue(app.buttons["Use rewrite"].waitForExistence(timeout: 5), "Use rewrite action was not shown")
+        app.buttons["Use rewrite"].tap()
+        XCTAssertFalse(app.buttons["Use original"].waitForExistence(timeout: 3), "Voice result card did not dismiss after using rewrite")
+    }
+
+    func testEmpathyAiSpeakKeepsDraftUnchanged() throws {
+        let app = XCUIApplication(bundleIdentifier: "com.apple.MobileSMS")
+        app.terminate(); app.launch()
+        for label in ["OK", "Continue"] {
+            let button = app.buttons[label].firstMatch
+            if button.waitForExistence(timeout: 2) { button.tap() }
+        }
+        let sampleThread = app.staticTexts["+1 (888) 555-1212"].firstMatch
+        XCTAssertTrue(sampleThread.waitForExistence(timeout: 10))
+        sampleThread.tap()
+        let textField = app.textFields["iMessage"].firstMatch
+        XCTAssertTrue(textField.waitForExistence(timeout: 10))
+        textField.tap()
+        try switchToEmapthyAiKeyboard(in: app)
+        typeOnRealKeyboard("hello team", in: app)
+        let before = textField.value as? String
+        let speak = app.buttons["Speak draft"].firstMatch
+        XCTAssertTrue(speak.waitForExistence(timeout: 10), "Speak draft button never appeared")
+        speak.tap()
+        XCTAssertEqual(textField.value as? String, before, "Speak changed the Messages draft")
+        XCTAssertTrue(app.otherElements["realKeyboardRoot"].waitForExistence(timeout: 10), "EmpathyAI keyboard disappeared during text playback")
     }
 }
 
