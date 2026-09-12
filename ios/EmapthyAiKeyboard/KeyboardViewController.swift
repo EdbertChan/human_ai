@@ -78,6 +78,7 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
     // the card's top edge gets clipped flat against the container. Measured
     // against the idle row via ToolbarRequestPromptSnapshotTests.
     private static let promptExtraHeight: CGFloat = 14
+    private static let voiceResultExtraHeight: CGFloat = 220
     // The "already corporate/empathetic" notice line only exists when the
     // draft was acceptable; the reviewing height tracks that so the common
     // no-notice card doesn't leave dead gray space below the keys.
@@ -85,7 +86,9 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
 
     private var heightConstraint: NSLayoutConstraint?
     private var promptCancellable: AnyCancellable?
+    private var voiceResultCancellable: AnyCancellable?
     private var promptVisible = false
+    private var voiceResultVisible = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,6 +103,13 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
             .sink { [weak self] prompt, acknowledged in
                 guard let self else { return }
                 self.promptVisible = prompt != nil || acknowledged != nil
+                self.updateKeyboardHeight(for: self.flowState.status)
+            }
+        voiceResultCancellable = toolbarModel.$voiceTranscript
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] transcript in
+                guard let self else { return }
+                self.voiceResultVisible = transcript != nil
                 self.updateKeyboardHeight(for: self.flowState.status)
             }
         toolbarModel.onSubmit = { [weak self] persona in
@@ -135,7 +145,8 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
             self.insertVoiceText(self.pendingVoiceResult?.replacement)
             self.toolbarModel.clearVoiceResult()
         }
-        toolbarModel.onVoicePlay = { [weak self] in self?.playVoiceResult() }
+        toolbarModel.onVoicePlayOriginal = { [weak self] in self?.playVoiceText(self?.pendingVoiceResult?.transcript) }
+        toolbarModel.onVoicePlayRewrite = { [weak self] in self?.playVoiceText(self?.pendingVoiceResult?.replacement) }
         sendProductEvent("keyboard_session_started")
         loadPersonaConfig()
         // hasFullAccess defaults to false and the idle button's text/width
@@ -253,7 +264,9 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
         let target: CGFloat
         switch status {
         case .idle, .rewriting:
-            target = Self.compactKeyboardHeight + (promptVisible ? Self.promptExtraHeight : 0)
+            target = Self.compactKeyboardHeight
+                + (promptVisible ? Self.promptExtraHeight : 0)
+                + (voiceResultVisible ? Self.voiceResultExtraHeight : 0)
         case .reviewing, .sending:
             target = Self.expandedKeyboardHeight
                 + (flowState.result?.acceptable == true ? Self.acceptableNoticeHeight : 0)
@@ -280,15 +293,24 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
         }
     }
 
-    // UITextDocumentProxy only ever exposes text immediately around the
-    // cursor (documentContextBeforeInput / -AfterInput), not the whole
-    // field the way Android's getExtractedText was — and only the "before"
-    // half can be removed via deleteBackward(). Reading and writing both
-    // use documentContextBeforeInput alone so the two stay consistent:
-    // reviewing "everything after" would let the replace silently duplicate
-    // or leave behind text the read included but the write couldn't clear.
+    // UITextDocumentProxy exposes the draft in two pieces around the cursor.
+    // Treat both pieces as the draft; users can tap the toolbar with the
+    // cursor anywhere in the message, not only at its end.
+    private func currentDraft() -> String {
+        (textDocumentProxy.documentContextBeforeInput ?? "")
+            + (textDocumentProxy.documentContextAfterInput ?? "")
+    }
+
+    private func replaceCurrentDraft(with text: String) {
+        let afterCount = (textDocumentProxy.documentContextAfterInput ?? "").count
+        if afterCount > 0 { textDocumentProxy.adjustTextPosition(byCharacterOffset: afterCount) }
+        let beforeCount = (textDocumentProxy.documentContextBeforeInput ?? "").count
+        for _ in 0..<beforeCount { textDocumentProxy.deleteBackward() }
+        textDocumentProxy.insertText(text)
+    }
+
     private func callRewriteAPI() {
-        let original = (textDocumentProxy.documentContextBeforeInput ?? "")
+        let original = currentDraft()
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !original.isEmpty else {
             dispatch(ReviewFlow.Event(type: "REWRITE_FAILED", message: "Type a message first."))
@@ -376,10 +398,19 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
         }
     }
 
-    private func playVoiceResult() {
-        guard let result = pendingVoiceResult else { return }
-        do { try playVoiceAudio(result.audio) }
-        catch { toolbarModel.setVoiceError(describe(error)) }
+    private func playVoiceText(_ text: String?) {
+        guard let text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        toolbarModel.setSpeaking(true)
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                let result = try await RewriteAPI.speakText(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), text: text, persona: self.toolbarModel.voicePersonaID)
+                try self.playVoiceAudio(result.audio)
+            } catch {
+                self.toolbarModel.setVoiceError(self.describe(error))
+                self.toolbarModel.setSpeaking(false)
+            }
+        }
     }
 
     private func playVoiceAudio(_ audio: Data) throws {
@@ -392,14 +423,12 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
 
     private func insertVoiceText(_ text: String?) {
         guard let text, !text.isEmpty else { return }
-        let before = textDocumentProxy.documentContextBeforeInput ?? ""
-        for _ in before { textDocumentProxy.deleteBackward() }
-        textDocumentProxy.insertText(text)
+        replaceCurrentDraft(with: text)
     }
 
     private func speakCurrentDraft() {
         if voicePlayer?.isPlaying == true { voicePlayer?.stop(); toolbarModel.setSpeaking(false); return }
-        let text = (textDocumentProxy.documentContextBeforeInput ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = currentDraft().trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { toolbarModel.setVoiceError("Type a message first."); return }
         toolbarModel.setSpeaking(true)
         Task { @MainActor [weak self] in
@@ -427,11 +456,7 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
             dispatch(ReviewFlow.Event(type: "SEND_FAILED", message: "The text field is no longer active."))
             return
         }
-        let before = textDocumentProxy.documentContextBeforeInput ?? ""
-        for _ in before {
-            textDocumentProxy.deleteBackward()
-        }
-        textDocumentProxy.insertText(result.replacement)
+        replaceCurrentDraft(with: result.replacement)
         dispatch(ReviewFlow.Event(type: "SEND_SUCCEEDED"))
     }
 }

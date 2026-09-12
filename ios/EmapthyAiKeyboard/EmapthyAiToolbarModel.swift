@@ -29,7 +29,8 @@ final class EmapthyAiToolbarModel: ObservableObject {
     var onSpeakTap: (() -> Void)?
     var onVoiceUseOriginal: (() -> Void)?
     var onVoiceUseRewrite: (() -> Void)?
-    var onVoicePlay: (() -> Void)?
+    var onVoicePlayOriginal: (() -> Void)?
+    var onVoicePlayRewrite: (() -> Void)?
 
     func update(_ newState: ReviewFlow.State) { state = newState }
     func voiceTapped() { onVoiceTap?() }
@@ -49,7 +50,8 @@ final class EmapthyAiToolbarModel: ObservableObject {
     }
     func useVoiceOriginal() { onVoiceUseOriginal?() }
     func useVoiceRewrite() { onVoiceUseRewrite?() }
-    func playVoiceResult() { onVoicePlay?() }
+    func playVoiceOriginal() { onVoicePlayOriginal?() }
+    func playVoiceRewrite() { onVoicePlayRewrite?() }
     func beginPersonaLoad() { personasLoading = true; personasError = nil; personas = [] }
     func applyPersonaConfig(_ config: PersonaConfig) {
         personasLoading = false

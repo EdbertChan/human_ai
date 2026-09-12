@@ -9,6 +9,7 @@ struct EmapthyAiToolbarView: View {
                 if let acknowledged = model.requestAcknowledgedLabel { acknowledgementRow(acknowledged) }
                 else if let prompt = model.requestPrompt { requestRow(prompt) }
                 else if model.voiceTranscript != nil { voiceResultCard }
+                else if let notice = model.state.notice { statusRow(text: notice) }
                 else { idleRow }
             case .rewriting:
                 if let preview = model.state.preview, !preview.isEmpty { previewCard(preview) }
@@ -61,11 +62,15 @@ struct EmapthyAiToolbarView: View {
     private func statusRow(text: String) -> some View { Text(text).font(.system(size: 12, weight: .semibold)).foregroundColor(textSecondary).frame(maxWidth: .infinity, alignment: .leading).padding(10).background(Color.white).cornerRadius(10) }
     private var reviewCard: some View { VStack(alignment: .leading, spacing: 6) { if model.state.result?.acceptable == true { Text("Already corporate — you can still send the normalized version.").font(.system(size: 12, weight: .semibold)).foregroundColor(textSecondary) }; Text("SUGGESTED REWRITE").font(.system(size: 10, weight: .bold)).foregroundColor(brandPrimary); ScrollView { Text(model.state.result?.replacement ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("suggestionText") }.frame(maxHeight: 70).accessibilityIdentifier("suggestionScrollView"); HStack(spacing: 6) { Button("Send") { model.onAccept?() }.buttonStyle(EmapthyAiActionButtonStyle(background: brandPrimary, foreground: .white)); Button("Cancel") { model.onKeepOriginal?() }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary)) }.padding(.top, 6) }.padding(10).background(Color.white).cornerRadius(10) }
     private var voiceResultCard: some View { VStack(alignment: .leading, spacing: 6) {
-        HStack { Text("VOICE RESULT").font(.system(size: 10, weight: .bold)).foregroundColor(brandPrimary); Spacer(); Button { model.playVoiceResult() } label: { Image(systemName: "play.fill") }.accessibilityLabel("Play voice result") }
+        Text("VOICE RESULT").font(.system(size: 10, weight: .bold)).foregroundColor(brandPrimary)
         Text("Original").font(.system(size: 10, weight: .bold)).foregroundColor(textSecondary)
-        Text(model.voiceTranscript ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("voiceTranscript")
+        ScrollView { Text(model.voiceTranscript ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 2).accessibilityIdentifier("voiceTranscript") }.frame(maxWidth: .infinity, minHeight: 70, maxHeight: 110).padding(.horizontal, 8).background(keepButtonGray).cornerRadius(8).accessibilityIdentifier("voiceTranscriptScrollView")
         Text("Rewrite").font(.system(size: 10, weight: .bold)).foregroundColor(textSecondary)
-        Text(model.voiceReplacement ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).accessibilityIdentifier("voiceReplacement")
+        ScrollView { Text(model.voiceReplacement ?? "").font(.system(size: 14)).foregroundColor(textPrimary).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 2).accessibilityIdentifier("voiceReplacement") }.frame(maxWidth: .infinity, minHeight: 70, maxHeight: 110).padding(.horizontal, 8).background(keepButtonGray).cornerRadius(8).accessibilityIdentifier("voiceReplacementScrollView")
+        HStack(spacing: 6) {
+            Button("Playback original") { model.playVoiceOriginal() }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary)).accessibilityIdentifier("playVoiceOriginalButton")
+            Button("Playback rewrite") { model.playVoiceRewrite() }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary)).accessibilityIdentifier("playVoiceRewriteButton")
+        }
         HStack(spacing: 6) {
             Button("Use original") { model.useVoiceOriginal() }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary)).accessibilityIdentifier("useVoiceOriginalButton")
             Button("Use rewrite") { model.useVoiceRewrite() }.buttonStyle(EmapthyAiActionButtonStyle(background: brandPrimary, foreground: .white)).accessibilityIdentifier("useVoiceRewriteButton")

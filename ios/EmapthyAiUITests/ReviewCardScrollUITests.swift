@@ -275,6 +275,7 @@ final class CorporateVoiceMicrophoneUITests: XCTestCase {
         let textField = app.textFields["iMessage"].firstMatch
         XCTAssertTrue(textField.waitForExistence(timeout: 10))
         textField.tap()
+        try enableKeyboardWithFullAccessIfNeeded()
         try switchToEmapthyAiKeyboard(in: app)
 
         let allowMonitor = addUIInterruptionMonitor(withDescription: "Microphone permission") { alert in
@@ -303,6 +304,10 @@ final class CorporateVoiceMicrophoneUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["realKeyboardRoot"].waitForExistence(timeout: 10), "EmpathyAI keyboard disappeared during voice relay/playback")
         XCTAssertTrue(app.buttons["Use original"].waitForExistence(timeout: 30), "Use original action was not shown")
         XCTAssertTrue(app.buttons["Use rewrite"].waitForExistence(timeout: 5), "Use rewrite action was not shown")
+        XCTAssertTrue(app.buttons["Playback original"].waitForExistence(timeout: 5), "Playback original action was not shown")
+        XCTAssertTrue(app.buttons["Playback rewrite"].waitForExistence(timeout: 5), "Playback rewrite action was not shown")
+        XCTAssertTrue(app.scrollViews["voiceTranscriptScrollView"].exists, "Original text was not placed in a scrollable pane")
+        XCTAssertTrue(app.scrollViews["voiceReplacementScrollView"].exists, "Rewrite text was not placed in a scrollable pane")
         app.buttons["Use rewrite"].tap()
         XCTAssertFalse(app.buttons["Use original"].waitForExistence(timeout: 3), "Voice result card did not dismiss after using rewrite")
     }
