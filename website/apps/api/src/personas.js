@@ -29,6 +29,10 @@ const PERSONABLE_PROMPT = `You are EmapthyAi's personable writing reviewer. Rewr
 
 ${SHARED_CONTRACT}`;
 
+const WARM_PROMPT = `You are EmapthyAi's warm writing reviewer. Rewrite the user's message into positive, encouraging, natural language that feels genuinely human while preserving the writer's meaning and appropriate boundaries. For harsh criticism, turn it into constructive feedback: acknowledge the effort or intention behind the work without making unsupported claims, name the improvement opportunity clearly, and offer to help when that fits the message. Prefer language like "I think this can be stronger" and "I'd be happy to help" over blunt judgments. Use warmth and reassurance without becoming overly formal, sentimental, vague, or falsely flattering.
+
+${SHARED_CONTRACT}`;
+
 const EMPATHY_PROMPT = `You are EmapthyAi's empathetic writing reviewer. Rewrite the user's message into kind, warm, natural language for a personal relationship — the way a caring partner, family member, or close friend would speak. Acknowledge the reader's feelings and perspective, and stay honest and direct about the writer's actual point or request. Avoid corporate and formal workplace phrasing entirely; sound like a real person who cares about the reader. Show warmth and understanding without groveling, over-apologizing, or weakening the substance of the message.
 
 ${SHARED_CONTRACT}`;
@@ -54,6 +58,15 @@ export const PERSONAS = {
       preserveEmoji: true
     }
   },
+  warm: {
+    id: "warm",
+    version: "warm@v1",
+    systemPrompt: WARM_PROMPT,
+    defaults: {
+      brevity: "normal",
+      preserveEmoji: true
+    }
+  },
   empathy: {
     id: "empathy",
     version: "empathy@v1",
@@ -68,8 +81,8 @@ export const PERSONAS = {
 // Keyboard persona config for /v1/personas. Availability is server-owned;
 // the client only renders this response and cannot unlock an option locally.
 // Empathy is controlled by the PostHog access decision; corporate and
-// personable are currently available server policies. The remaining options
-// are request-only placeholders.
+// personable and warm are currently available server policies. The remaining
+// options are request-only placeholders.
 export function personaOptions(variant) {
   const empathyAvailable = variant === "empathy_available";
   return [
@@ -77,7 +90,7 @@ export function personaOptions(variant) {
     { id: "personable", label: "Personable", available: true, requestable: false },
     { id: "empathy", label: "Empathy", available: empathyAvailable, requestable: !empathyAvailable },
     { id: "small_talk", label: "Small Talk", available: false, requestable: true },
-    { id: "warm", label: "Warm", available: false, requestable: true },
+    { id: "warm", label: "Warm", available: true, requestable: false },
     { id: "polite", label: "Polite", available: false, requestable: true }
   ];
 }
@@ -88,7 +101,7 @@ export const ALLOWED_BREVITY = new Set(["short", "normal"]);
 export function validatePersonaFields(value) {
   if (value.persona !== undefined) {
     if (typeof value.persona !== "string" || !PERSONAS[value.persona]) {
-      return "persona must be one of: corporate, personable, empathy.";
+      return "persona must be one of: corporate, personable, warm, empathy.";
     }
   }
   if (value.customization === undefined) return null;
