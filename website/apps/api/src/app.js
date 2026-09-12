@@ -3,7 +3,7 @@ import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
 import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
 import { rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
-import { createVoice, ElevenLabsProviderError } from "./elevenlabs.js";
+import { createVoice, synthesizeSpeech as synthesizeSpeechWithElevenLabs, ElevenLabsProviderError } from "./elevenlabs.js";
 import { PERSONAS, personaOptions, resolvePersona } from "./personas.js";
 import {
   DurableConfigError,
@@ -144,7 +144,8 @@ export function createHandler(env = process.env, dependencies = {}) {
     host: env.POSTHOG_HOST
   }));
   const exaSearch = dependencies.exaSearch ?? searchExa;
-  const synthesize = dependencies.synthesizeSpeech ?? synthesizeSpeechWithOpenAI;
+  const synthesizeOpenAI = dependencies.synthesizeSpeech ?? synthesizeSpeechWithOpenAI;
+  const synthesizeElevenLabs = dependencies.synthesizeElevenLabsSpeech ?? synthesizeSpeechWithElevenLabs;
   const legacyEmpathyEvaluator = !accountDeviceStore && env.NODE_ENV === "test";
   const empathyAccessFor = dependencies.evaluateEmpathyAccess ?? ((accountDistinctId) => evaluateEmpathyAccess({
     distinctId: accountDistinctId,
@@ -400,7 +401,14 @@ export function createHandler(env = process.env, dependencies = {}) {
           if (env.EXA_API_KEY) citations = await searchExa({ query: `${body.text} ${translation}`, apiKey: env.EXA_API_KEY, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) });
         }
         const output = { direction, original: body.text, translation, citations };
-        if (body.tone) { const spoken = await synthesize({ text: translation, tone: body.tone, voice: body.voice ?? env.OPENAI_TTS_VOICE ?? "coral", apiKey: env.OPENAI_API_KEY, model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts", ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) }); output.audio = Buffer.from(spoken.audio).toString("base64"); output.audioContentType = spoken.contentType; }
+        if (body.tone) {
+          const sharedOptions = { text: translation, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) };
+          const spoken = env.TTS_PROVIDER === "elevenlabs"
+            ? await synthesizeElevenLabs({ ...sharedOptions, voiceId: body.voice ?? env.ELEVENLABS_VOICE_ID, apiKey: env.ELEVENLABS_API_KEY, model: env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2" })
+            : await synthesizeOpenAI({ ...sharedOptions, tone: body.tone, voice: body.voice ?? env.OPENAI_TTS_VOICE ?? "coral", apiKey: env.OPENAI_API_KEY, model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts" });
+          output.audio = Buffer.from(spoken.audio).toString("base64");
+          output.audioContentType = spoken.contentType;
+        }
         return json(200, output, { ...cors, "cache-control": "no-store" });
       } catch (error) {
         if (error.status === 503) return json(503, { error: "provider_not_configured", message: error.message }, cors);
