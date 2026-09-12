@@ -18,7 +18,9 @@ struct EmapthyAiToolbarView: View {
     }
     private var idleRow: some View {
         HStack(spacing: 6) {
-            Circle().fill(model.conversationContextEnabled ? Color.green : brandPrimary).frame(width: 34, height: 34).overlay(Text("N").font(.system(size: 16, weight: .bold)).foregroundColor(.white)).overlay(alignment: .bottomTrailing) { if model.conversationContextEnabled { Circle().fill(.white).frame(width: 9, height: 9).padding(2) } }.onLongPressGesture(minimumDuration: 0.55) { model.toggleConversationContext() }.accessibilityLabel(model.conversationContextEnabled ? "Conversation context on" : "Conversation context off").accessibilityHint("Long press to toggle")
+            Button(action: { model.voiceTapped() }) {
+                Circle().fill(model.isRecordingVoice ? Color.red : brandPrimary).frame(width: 38, height: 38).overlay(Image(systemName: model.isRecordingVoice ? "stop.fill" : "mic.fill").font(.system(size: 15, weight: .bold)).foregroundColor(.white))
+            }.accessibilityLabel(model.isRecordingVoice ? "Stop corporate voice recording" : "Record corporate voice").accessibilityHint("Tap to record, then tap again to send")
             if model.hasFullAccess {
                 ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 6) { ForEach(model.personas, id: \.id) { personaButton($0) } } }.fixedSize(horizontal: false, vertical: true)
             } else {

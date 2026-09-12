@@ -41,7 +41,7 @@ export async function rewriteWithOpenAI({
     },
     body: JSON.stringify({
       model,
-      reasoning: { effort: "minimal" },
+      reasoning: { effort: "low" },
       text: {
         format: {
           type: "json_schema",

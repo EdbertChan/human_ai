@@ -356,6 +356,26 @@ export function createHandler(env = process.env, dependencies = {}) {
       }
     }
 
+    if (request.method === "POST" && url.pathname === "/v1/voice/relay") {
+      let form;
+      try { form = await request.formData(); } catch { return json(400, { error: "invalid_multipart" }, cors); }
+      const persona = form.get("persona");
+      const distinctId = form.get("distinctId");
+      const audio = form.get("audio");
+      if (persona !== "corporate" || !isValidDistinctId(distinctId) || !(audio instanceof File)) {
+        return json(400, { error: "invalid_request", message: "distinctId, corporate persona, and audio are required." }, cors);
+      }
+      const audioBytes = await audio.arrayBuffer();
+      if (audioBytes.byteLength === 0 || audioBytes.byteLength > 15 * 1024 * 1024) {
+        return json(400, { error: "invalid_request", message: "audio is empty or too large." }, cors);
+      }
+      return json(200, {
+        persona,
+        audio: Buffer.from(audioBytes).toString("base64"),
+        audioContentType: audio.type || "application/octet-stream"
+      }, { ...cors, "cache-control": "no-store" });
+    }
+
     if (request.method === "POST" && url.pathname === "/v1/translate") {
       let body;
       try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }

@@ -1,7 +1,7 @@
-export async function toWebRequest(request) {
+export async function toWebRequest(request, pathOverride = null) {
   const chunks = [];
   for await (const chunk of request) chunks.push(chunk);
-  const url = new URL(request.url, `http://${request.headers.host ?? "localhost"}`);
+  const url = new URL(pathOverride ?? request.url, `http://${request.headers.host ?? "localhost"}`);
   return new Request(url, {
     method: request.method,
     headers: request.headers,
