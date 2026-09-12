@@ -1,15 +1,23 @@
 # Copyright (c) 2026 EdbertChan
 """FastAPI entrypoint for expressive ElevenLabs speech."""
 
+import logging
 import math
 import os
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator, AsyncIterator
+from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
-from typing import Final
+from typing import Annotated, Final
 
+import anyio
 from elevenlabs.client import AsyncElevenLabs
-from fastapi import FastAPI
+from elevenlabs.core.api_error import ApiError
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
+from pydantic_core import PydanticCustomError
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_VOICE_ID: Final = "JBFqnCBsd6RMkjVDRZzb"
 DEFAULT_INITIAL_CHUNK_TIMEOUT: Final = 10.0
@@ -17,6 +25,10 @@ MODEL_ID: Final = "eleven_v3"
 OUTPUT_FORMAT: Final = "mp3_44100_128"
 API_KEY_ENV: Final = "ELEVENLABS_API_KEY"
 TIMEOUT_ENV: Final = "ELEVENLABS_INITIAL_CHUNK_TIMEOUT_SECONDS"
+SPEECH_FAILURE_DETAIL: Final = "ElevenLabs speech generation failed."
+INITIAL_TIMEOUT_DETAIL: Final = "ElevenLabs initial audio chunk timed out."
+BLANK_ERROR_TYPE: Final = "blank_string"
+BLANK_ERROR_MESSAGE: Final = "must not be blank"
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +49,22 @@ class Settings:
     api_key: str
     voice_id: str
     initial_chunk_timeout: float
+
+
+class SpeechRequest(BaseModel):
+    """Parse speech requests without changing caller-provided text."""
+
+    model_config = ConfigDict(frozen=True)
+
+    text: StrictStr
+    tone: StrictStr
+
+    @field_validator("text", "tone")
+    @classmethod
+    def _require_content(cls, value: str) -> str:
+        if not value.strip():
+            raise PydanticCustomError(BLANK_ERROR_TYPE, BLANK_ERROR_MESSAGE)
+        return value
 
 
 def settings() -> Settings:
@@ -73,3 +101,62 @@ def get_client() -> AsyncElevenLabs:
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+@app.post("/v1/speech", response_class=StreamingResponse)
+async def speech(
+    payload: SpeechRequest,
+    client: Annotated[AsyncElevenLabs, Depends(get_client)],
+) -> StreamingResponse:
+    """Preflight and stream expressive MP3 speech."""
+    config = settings()
+    stack = AsyncExitStack()
+    try:
+        response = await stack.enter_async_context(
+            client.text_to_speech.with_raw_response.stream(
+                config.voice_id,
+                text=f"[{payload.tone.strip()}] {payload.text}",
+                model_id=MODEL_ID,
+                output_format=OUTPUT_FORMAT,
+                request_options={"max_retries": 0},
+            )
+        )
+        chunks = response.data.__aiter__()
+        with anyio.fail_after(config.initial_chunk_timeout):
+            async for chunk in chunks:
+                if chunk:
+                    first_chunk = chunk
+                    break
+            else:
+                await stack.aclose()
+                raise HTTPException(status.HTTP_502_BAD_GATEWAY, SPEECH_FAILURE_DETAIL)
+    except TimeoutError as error:
+        await stack.aclose()
+        raise HTTPException(status.HTTP_504_GATEWAY_TIMEOUT, INITIAL_TIMEOUT_DETAIL) from error
+    except ApiError as error:
+        await stack.aclose()
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, SPEECH_FAILURE_DETAIL) from error
+
+    request_id = response.headers.get("request-id")
+
+    async def audio() -> AsyncIterator[bytes]:
+        try:
+            yield first_chunk
+            async for chunk in chunks:
+                if chunk:
+                    yield chunk
+        except ApiError:
+            logger.warning(
+                "elevenlabs_stream_failed",
+                extra={"request_id": request_id or "unavailable"},
+            )
+            raise
+        finally:
+            with anyio.CancelScope(shield=True):
+                await stack.aclose()
+
+    return StreamingResponse(
+        audio(),
+        media_type="audio/mpeg",
+        headers={"Cache-Control": "no-store", "X-AI-Generated-Voice": "true"},
+    )
