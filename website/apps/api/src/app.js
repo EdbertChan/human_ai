@@ -404,7 +404,7 @@ export function createHandler(env = process.env, dependencies = {}) {
         const output = { direction, original: body.text, translation, citations };
         if (body.tone) {
           const sharedOptions = { text: translation, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) };
-          const spoken = (body.ttsProvider ?? env.TTS_PROVIDER) === "elevenlabs"
+          const spoken = body.ttsProvider === "elevenlabs"
             ? await synthesizeElevenLabs({ ...sharedOptions, voiceId: body.voice ?? env.ELEVENLABS_VOICE_ID, apiKey: env.ELEVENLABS_API_KEY, model: env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2" })
             : await synthesizeOpenAI({ ...sharedOptions, tone: body.tone, voice: body.voice ?? env.OPENAI_TTS_VOICE ?? "coral", apiKey: env.OPENAI_API_KEY, model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts" });
           output.audio = Buffer.from(spoken.audio).toString("base64");

@@ -30,7 +30,7 @@ test("voice relay rejects a non-corporate persona", async () => {
   assert.equal(response.status, 400);
 });
 
-test("translation returns OpenAI audio when a tone is requested", async () => {
+test("translation defaults to OpenAI when ttsProvider is omitted", async () => {
   const input = new Uint8Array([73, 68, 51, 4]);
   let rewriteRequest;
   let synthesisRequest;
@@ -51,7 +51,7 @@ test("translation returns OpenAI audio when a tone is requested", async () => {
   const response = await voiceHandler(new Request("https://example.test/v1/translate", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text: "Read this", direction: "outgoing", persona: "corporate", tone: "Warm and reassuring", ttsProvider: "openai" })
+    body: JSON.stringify({ text: "Read this", direction: "outgoing", persona: "corporate", tone: "Warm and reassuring" })
   }));
 
   assert.equal(response.status, 200);

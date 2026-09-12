@@ -49,11 +49,10 @@ curl -X POST http://127.0.0.1:8787/v1/rewrite \
 ```
 
 Adding `tone` to `/v1/translate` returns the persona-shaped text as
-base64-encoded audio. `TTS_PROVIDER` selects `openai` (the default) or
-`elevenlabs`. The optional `ttsProvider` request field overrides that default
-at runtime. `voice` is optional and defaults to `OPENAI_TTS_VOICE` for OpenAI
-or `ELEVENLABS_VOICE_ID` for ElevenLabs. The response adds `audio` and
-`audioContentType` fields.
+base64-encoded audio. The optional `ttsProvider` request field selects `openai`
+or `elevenlabs` at runtime; omitting it uses OpenAI. `voice` is optional and
+defaults to `OPENAI_TTS_VOICE` for OpenAI or `ELEVENLABS_VOICE_ID` for
+ElevenLabs. The response adds `audio` and `audioContentType` fields.
 
 ```sh
 curl -X POST http://127.0.0.1:8787/v1/translate \
