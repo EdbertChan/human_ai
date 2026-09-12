@@ -3,6 +3,7 @@ import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
 import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
 import { rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
+import { createVoice, ElevenLabsProviderError } from "./elevenlabs.js";
 import { PERSONAS, personaOptions, resolvePersona } from "./personas.js";
 import {
   DurableConfigError,
@@ -337,6 +338,22 @@ export function createHandler(env = process.env, dependencies = {}) {
       return json(200, {
         conversationContext: access === "available" ? "available" : "locked"
       }, { ...cors, "cache-control": "no-store" });
+    }
+
+    if (request.method === "POST" && url.pathname === "/v1/voice/sample") {
+      let form;
+      try { form = await request.formData(); } catch { return json(400, { error: "invalid_multipart" }, cors); }
+      const distinctId = form.get("distinctId"); const name = form.get("name"); const audio = form.get("audio");
+      if (!isValidDistinctId(distinctId) || typeof name !== "string" || !name.trim() || !(audio instanceof File)) return json(400, { error: "invalid_request", message: "distinctId, name, and audio are required." }, cors);
+      try {
+        const voiceId = await (dependencies.createVoice ?? createVoice)({ name, audio, mimeType: audio.type, apiKey: env.ELEVENLABS_API_KEY, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) });
+        return json(200, { voiceId }, { ...cors, "cache-control": "no-store" });
+      } catch (error) {
+        if (error instanceof TypeError) return json(400, { error: "invalid_request", message: error.message }, cors);
+        if (error instanceof ElevenLabsProviderError && error.status === 503) return json(503, { error: "voice_not_configured", message: "Configure ElevenLabs on the server." }, cors);
+        if (error instanceof ElevenLabsProviderError && (error.status === 401 || error.status === 403)) return json(502, { error: "voice_not_available", message: "Voice cloning unavailable for this account." }, cors);
+        return json(502, { error: "voice_provider_failed", message: "Voice provider failed." }, cors);
+      }
     }
 
     if (request.method === "POST" && url.pathname === "/v1/voice/relay") {
