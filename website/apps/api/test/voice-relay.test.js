@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHandler } from "../src/app.js";
+import { synthesizeSpeechWithOpenAI } from "../src/openai.js";
 
 const handler = createHandler({ NODE_ENV: "test" });
 
@@ -26,5 +27,78 @@ test("voice relay rejects a non-corporate persona", async () => {
   form.set("audio", new File([new Uint8Array([1])], "voice.m4a", { type: "audio/mp4" }));
 
   const response = await handler(new Request("https://example.test/v1/voice/relay", { method: "POST", body: form }));
+  assert.equal(response.status, 400);
+});
+
+test("translation returns OpenAI audio when a tone is requested", async () => {
+  const input = new Uint8Array([73, 68, 51, 4]);
+  let rewriteRequest;
+  let synthesisRequest;
+  const voiceHandler = createHandler(
+    { OPENAI_API_KEY: "test-key", OPENAI_TTS_MODEL: "gpt-4o-mini-tts", OPENAI_TTS_VOICE: "coral", NODE_ENV: "test" },
+    {
+      translateRewrite: async (options) => {
+        rewriteRequest = options;
+        return { replacement: "Please read this aloud." };
+      },
+      synthesizeSpeech: async (options) => {
+        synthesisRequest = options;
+        return { audio: input.buffer, contentType: "audio/mpeg" };
+      }
+    }
+  );
+
+  const response = await voiceHandler(new Request("https://example.test/v1/translate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text: "Read this", direction: "outgoing", persona: "corporate", tone: "Warm and reassuring" })
+  }));
+
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.translation, "Please read this aloud.");
+  assert.equal(body.audio, Buffer.from(input).toString("base64"));
+  assert.equal(body.audioContentType, "audio/mpeg");
+  assert.equal(rewriteRequest.resolvedPersona.id, "corporate");
+  assert.equal(synthesisRequest.text, "Please read this aloud.");
+  assert.equal(synthesisRequest.tone, "Warm and reassuring");
+  assert.equal(synthesisRequest.voice, "coral");
+  assert.equal(synthesisRequest.model, "gpt-4o-mini-tts");
+});
+
+test("OpenAI speech sends tone instructions and returns audio", async () => {
+  const input = new Uint8Array([73, 68, 51, 4]);
+  let request;
+
+  const speech = await synthesizeSpeechWithOpenAI({
+    text: "Read this aloud",
+    tone: "Calm and concise",
+    voice: "coral",
+    model: "gpt-4o-mini-tts",
+    apiKey: "test-key",
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return new Response(input, { status: 200, headers: { "content-type": "audio/mpeg" } });
+    }
+  });
+
+  assert.equal(request.url, "https://api.openai.com/v1/audio/speech");
+  assert.deepEqual(JSON.parse(request.options.body), {
+    model: "gpt-4o-mini-tts",
+    input: "Read this aloud",
+    voice: "coral",
+    instructions: "Calm and concise"
+  });
+  assert.equal(speech.contentType, "audio/mpeg");
+  assert.deepEqual([...new Uint8Array(speech.audio)], [...input]);
+});
+
+test("translation rejects an empty tone", async () => {
+  const response = await handler(new Request("https://example.test/v1/translate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text: "Read this", direction: "outgoing", tone: "" })
+  }));
+
   assert.equal(response.status, 400);
 });

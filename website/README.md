@@ -48,6 +48,17 @@ curl -X POST http://127.0.0.1:8787/v1/rewrite \
   -d '{"text":"this makes no sense, this is stupid","context":{"app":"slack"}}'
 ```
 
+With `OPENAI_API_KEY` configured, adding `tone` to `/v1/translate` returns the
+persona-shaped text as OpenAI-generated, base64-encoded audio. `voice` is
+optional and defaults to `OPENAI_TTS_VOICE` (`coral` when unset). The response
+adds `audio` and `audioContentType` fields.
+
+```sh
+curl -X POST http://127.0.0.1:8787/v1/translate \
+  -H 'content-type: application/json' \
+  -d '{"text":"Hello from EmapthyAi.","direction":"outgoing","persona":"corporate","tone":"Warm and confident","voice":"coral"}'
+```
+
 ## 2. Install the browser extension
 
 The hosted installer always downloads the Chrome developer extension to
