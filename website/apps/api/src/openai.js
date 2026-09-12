@@ -1,4 +1,4 @@
-import { CORPORATE_SYSTEM_PROMPT, formatRewriteInput, logLlmRequestIfEnabled, normalizeModelResult, parseJsonText } from "./llm.js";
+import { CORPORATE_SYSTEM_PROMPT, formatRewriteInput, formatWebSearchInput, logLlmRequestIfEnabled, normalizeModelResult, parseJsonText, WEB_SEARCH_SYSTEM_PROMPT } from "./llm.js";
 import { PERSONAS } from "./personas.js";
 
 function extractOutputText(response) {
@@ -104,4 +104,39 @@ export async function rewriteWithOpenAI({
   }
 
   return normalizeModelResult(parseJsonText(extractOutputText(await response.json())), text, "openai", policyVersion);
+}
+
+export async function answerWithOpenAI({
+  query,
+  sources = [],
+  apiKey,
+  model,
+  systemPrompt = WEB_SEARCH_SYSTEM_PROMPT,
+  fetchImpl = fetch
+} = {}) {
+  if (typeof query !== "string" || !query.trim()) throw new TypeError("query is required.");
+  if (!apiKey) throw new Error("OpenAI search is not configured.");
+  const response = await fetchImpl("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model,
+      reasoning: { effort: "low" },
+      store: false,
+      input: [
+        { role: "developer", content: systemPrompt },
+        { role: "user", content: formatWebSearchInput(query.trim(), sources) }
+      ]
+    })
+  });
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 500);
+    throw new Error(`OpenAI search request failed (${response.status}): ${detail}`);
+  }
+  const answer = extractOutputText(await response.json()).trim();
+  if (!answer) throw new Error("The OpenAI search response was empty.");
+  return answer;
 }

@@ -1,7 +1,7 @@
 import { validateRewriteRequest } from "./policy.js";
-import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
-import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
-import { rewriteWithClaudeCode } from "./claude-code.js";
+import { answerWithOpenAI, rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
+import { answerWithAnthropic, rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
+import { answerWithClaudeCode, rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
 import { createVoice, registerTwilioCall as registerTwilioCallWithElevenLabs, startTwilioCall as startTwilioCallWithElevenLabs, synthesizeSpeech as synthesizeSpeechWithElevenLabs, ElevenLabsProviderError } from "./elevenlabs.js";
 import { twilioFormParams, verifyBearerToken, verifyTwilioSignature } from "./twilio.js";
@@ -86,6 +86,12 @@ export function defaultRewrite(provider) {
   if (provider === "anthropic") return rewriteWithAnthropic;
   if (provider === "openai") return rewriteWithOpenAI;
   return rewriteWithClaudeCode;
+}
+
+export function defaultSearchAnswer(provider) {
+  if (provider === "anthropic") return answerWithAnthropic;
+  if (provider === "openai") return answerWithOpenAI;
+  return answerWithClaudeCode;
 }
 
 export function streamingRewrite(provider) {
@@ -446,6 +452,36 @@ export function createHandler(env = process.env, dependencies = {}) {
       }, { ...cors, "cache-control": "no-store" });
     }
 
+    if (request.method === "POST" && url.pathname === "/v1/search") {
+      let body;
+      try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }
+      if (!body || typeof body !== "object" || Array.isArray(body) || typeof body.query !== "string" || !body.query.trim() || body.query.length > 4000) {
+        return json(400, { error: "invalid_request", message: "query is required and must be 4,000 characters or fewer." }, cors);
+      }
+      if (!env.EXA_API_KEY) return json(503, { error: "search_not_configured", message: "Configure EXA_API_KEY on the server." }, cors);
+      const provider = selectProvider(env);
+      const apiKey = provider === "anthropic" ? env.ANTHROPIC_API_KEY : env.OPENAI_API_KEY;
+      if (provider !== "claude-code" && !apiKey) return json(503, { error: "llm_not_configured", message: "Configure the selected provider key on the server." }, cors);
+      try {
+        const search = await exaSearch({
+          query: body.query,
+          apiKey: env.EXA_API_KEY,
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        const answer = await (dependencies.answerSearch ?? defaultSearchAnswer(provider))({
+          query: body.query,
+          sources: search.citations,
+          apiKey,
+          model: providerModel(provider, env),
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        return json(200, { query: body.query, answer, citations: search.citations, provider }, { ...cors, "cache-control": "no-store" });
+      } catch (error) {
+        if (error instanceof ExaProviderError && error.status === 503) return json(503, { error: "search_not_configured", message: error.message }, cors);
+        return json(502, { error: "search_failed", message: "Web search failed." }, cors);
+      }
+    }
+
     if (request.method === "POST" && url.pathname === "/v1/translate") {
       let body;
       try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }
@@ -468,7 +504,7 @@ export function createHandler(env = process.env, dependencies = {}) {
         } else {
           if (dependencies.translateIncoming) translation = (await dependencies.translateIncoming({ text: body.text })).translation;
           else translation = body.text;
-          if (env.EXA_API_KEY) citations = await searchExa({ query: `${body.text} ${translation}`, apiKey: env.EXA_API_KEY, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) });
+          if (env.EXA_API_KEY) citations = await exaSearch({ query: `${body.text} ${translation}`, apiKey: env.EXA_API_KEY, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) });
         }
         const output = { direction, original: body.text, translation, citations };
         if (body.tone) {

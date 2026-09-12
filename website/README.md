@@ -3,6 +3,7 @@
 EmapthyAi previews a corporate rewrite before replacing a draft. The MVP contains:
 
 - A policy API backed by the authenticated local Claude Code subscription, Anthropic Claude API, or OpenAI API.
+- An Exa-powered web search endpoint that grounds concise answers in live web results while keeping the answer in EmapthyAi's voice.
 - A Chrome extension for Slack Web and Google Chat that detects the active composer and extracts conversation IDs from the page URL.
 - An Android input method that reviews the active draft and sees the owning app package.
 
@@ -88,6 +89,18 @@ curl -X POST https://YOUR_DOMAIN/v1/telephony/twilio/outbound \
 Phone numbers must use E.164 format (`+` followed by country code and number).
 Twilio and ElevenLabs still apply their own account, consent, recording, and
 phone-number restrictions.
+
+The web search endpoint keeps both provider keys on the server. It searches with
+Exa, sends the returned source extracts to the configured LLM as untrusted
+context, and returns the synthesized answer with citations.
+
+```sh
+curl -X POST http://127.0.0.1:8787/v1/search \
+  -H 'content-type: application/json' \
+  -d '{"query":"What changed in the latest OpenAI API release?"}'
+```
+
+Set EXA_API_KEY and configure the selected LLM provider before calling it.
 
 ## 2. Install the browser extension
 
