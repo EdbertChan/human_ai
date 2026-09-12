@@ -1,9 +1,9 @@
 import { validateRewriteRequest } from "./policy.js";
-import { rewriteWithOpenAI } from "./openai.js";
+import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
 import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
 import { rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
-import { createVoice, synthesizeSpeech, ElevenLabsProviderError } from "./elevenlabs.js";
+import { createVoice, ElevenLabsProviderError } from "./elevenlabs.js";
 import { PERSONAS, personaOptions, resolvePersona } from "./personas.js";
 import {
   DurableConfigError,
@@ -144,7 +144,7 @@ export function createHandler(env = process.env, dependencies = {}) {
     host: env.POSTHOG_HOST
   }));
   const exaSearch = dependencies.exaSearch ?? searchExa;
-  const synthesize = dependencies.synthesize ?? synthesizeSpeech;
+  const synthesize = dependencies.synthesizeSpeech ?? synthesizeSpeechWithOpenAI;
   const legacyEmpathyEvaluator = !accountDeviceStore && env.NODE_ENV === "test";
   const empathyAccessFor = dependencies.evaluateEmpathyAccess ?? ((accountDistinctId) => evaluateEmpathyAccess({
     distinctId: accountDistinctId,
@@ -350,8 +350,8 @@ export function createHandler(env = process.env, dependencies = {}) {
         return json(200, { voiceId }, { ...cors, "cache-control": "no-store" });
       } catch (error) {
         if (error instanceof TypeError) return json(400, { error: "invalid_request", message: error.message }, cors);
-        if (error.status === 503) return json(503, { error: "voice_not_configured", message: "Configure ElevenLabs on the server." }, cors);
-        if (error.status === 401 || error.status === 403) return json(502, { error: "voice_not_available", message: "Voice cloning unavailable for this account." }, cors);
+        if (error instanceof ElevenLabsProviderError && error.status === 503) return json(503, { error: "voice_not_configured", message: "Configure ElevenLabs on the server." }, cors);
+        if (error instanceof ElevenLabsProviderError && (error.status === 401 || error.status === 403)) return json(502, { error: "voice_not_available", message: "Voice cloning unavailable for this account." }, cors);
         return json(502, { error: "voice_provider_failed", message: "Voice provider failed." }, cors);
       }
     }
@@ -380,6 +380,8 @@ export function createHandler(env = process.env, dependencies = {}) {
       let body;
       try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }
       if (!body || typeof body !== "object" || Array.isArray(body) || typeof body.text !== "string" || !body.text.trim() || body.text.length > 4000 || !["incoming", "outgoing"].includes(body.direction)) return json(400, { error: "invalid_request", message: "text and direction are required." }, cors);
+      if (body.tone !== undefined && (typeof body.tone !== "string" || !body.tone.trim() || body.tone.length > 1000)) return json(400, { error: "invalid_request", message: "tone must be a non-empty string." }, cors);
+      if (body.voice !== undefined && (typeof body.voice !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(body.voice))) return json(400, { error: "invalid_request", message: "voice is invalid." }, cors);
       if (body.direction === "outgoing" && body.persona !== undefined) {
         const authorizationError = await authorizePersona(request, body.distinctId, body.persona);
         if (authorizationError) return json(authorizationError.status, { error: authorizationError.error, message: authorizationError.message }, cors);
@@ -398,7 +400,7 @@ export function createHandler(env = process.env, dependencies = {}) {
           if (env.EXA_API_KEY) citations = await searchExa({ query: `${body.text} ${translation}`, apiKey: env.EXA_API_KEY, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) });
         }
         const output = { direction, original: body.text, translation, citations };
-        if (body.voiceId) { const spoken = await (dependencies.synthesizeSpeech ?? synthesizeSpeech)({ voiceId: body.voiceId, text: translation, apiKey: env.ELEVENLABS_API_KEY, modelId: env.ELEVENLABS_MODEL_ID, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) }); output.audio = Buffer.from(spoken.audio).toString("base64"); output.audioContentType = spoken.contentType; }
+        if (body.tone) { const spoken = await synthesize({ text: translation, tone: body.tone, voice: body.voice ?? env.OPENAI_TTS_VOICE ?? "coral", apiKey: env.OPENAI_API_KEY, model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts", ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) }); output.audio = Buffer.from(spoken.audio).toString("base64"); output.audioContentType = spoken.contentType; }
         return json(200, output, { ...cors, "cache-control": "no-store" });
       } catch (error) {
         if (error.status === 503) return json(503, { error: "provider_not_configured", message: error.message }, cors);

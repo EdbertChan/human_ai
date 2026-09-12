@@ -22,6 +22,40 @@ const REWRITE_SCHEMA = {
   additionalProperties: false
 };
 
+export class OpenAISpeechError extends Error {
+  constructor(status, message = "OpenAI speech request failed.") {
+    super(message);
+    this.name = "OpenAISpeechError";
+    this.status = Number.isInteger(status) ? status : 502;
+  }
+}
+
+export async function synthesizeSpeechWithOpenAI({
+  text,
+  tone,
+  voice = "coral",
+  model = "gpt-4o-mini-tts",
+  apiKey,
+  fetchImpl = fetch
+} = {}) {
+  if (typeof text !== "string" || !text.trim() || text.length > 4000) throw new TypeError("text is required and bounded.");
+  if (typeof tone !== "string" || !tone.trim() || tone.length > 1000) throw new TypeError("tone is required and bounded.");
+  if (typeof voice !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(voice)) throw new TypeError("voice is invalid.");
+  if (!apiKey) throw new OpenAISpeechError(503, "OpenAI speech is not configured.");
+  let response;
+  try {
+    response = await fetchImpl("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+      body: JSON.stringify({ model, input: text.trim(), voice, instructions: tone.trim() })
+    });
+  } catch {
+    throw new OpenAISpeechError(502);
+  }
+  if (!response.ok) throw new OpenAISpeechError(response.status);
+  return { audio: await response.arrayBuffer(), contentType: response.headers.get("content-type") || "audio/mpeg" };
+}
+
 export async function rewriteWithOpenAI({
   text,
   context,
