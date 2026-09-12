@@ -383,6 +383,7 @@ export function createHandler(env = process.env, dependencies = {}) {
       if (!body || typeof body !== "object" || Array.isArray(body) || typeof body.text !== "string" || !body.text.trim() || body.text.length > 4000 || !["incoming", "outgoing"].includes(body.direction)) return json(400, { error: "invalid_request", message: "text and direction are required." }, cors);
       if (body.tone !== undefined && (typeof body.tone !== "string" || !body.tone.trim() || body.tone.length > 1000)) return json(400, { error: "invalid_request", message: "tone must be a non-empty string." }, cors);
       if (body.voice !== undefined && (typeof body.voice !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(body.voice))) return json(400, { error: "invalid_request", message: "voice is invalid." }, cors);
+      if (body.ttsProvider !== undefined && !["openai", "elevenlabs"].includes(body.ttsProvider)) return json(400, { error: "invalid_request", message: "ttsProvider must be openai or elevenlabs." }, cors);
       if (body.direction === "outgoing" && body.persona !== undefined) {
         const authorizationError = await authorizePersona(request, body.distinctId, body.persona);
         if (authorizationError) return json(authorizationError.status, { error: authorizationError.error, message: authorizationError.message }, cors);
@@ -403,7 +404,7 @@ export function createHandler(env = process.env, dependencies = {}) {
         const output = { direction, original: body.text, translation, citations };
         if (body.tone) {
           const sharedOptions = { text: translation, ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {}) };
-          const spoken = env.TTS_PROVIDER === "elevenlabs"
+          const spoken = (body.ttsProvider ?? env.TTS_PROVIDER) === "elevenlabs"
             ? await synthesizeElevenLabs({ ...sharedOptions, voiceId: body.voice ?? env.ELEVENLABS_VOICE_ID, apiKey: env.ELEVENLABS_API_KEY, model: env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2" })
             : await synthesizeOpenAI({ ...sharedOptions, tone: body.tone, voice: body.voice ?? env.OPENAI_TTS_VOICE ?? "coral", apiKey: env.OPENAI_API_KEY, model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts" });
           output.audio = Buffer.from(spoken.audio).toString("base64");
