@@ -307,21 +307,13 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
     // Treat both pieces as the draft; users can tap the toolbar with the
     // cursor anywhere in the message, not only at its end.
     private func currentDraft() -> String {
-        let before = textDocumentProxy.documentContextBeforeInput ?? ""
-        let after = textDocumentProxy.documentContextAfterInput ?? ""
-        // iOS can expose a stale/short context at the cursor even while the
-        // host field visibly contains more text. Read once at the end of the
-        // document, where the whole draft is in the preceding context, then
-        // restore the user's cursor position.
-        if !after.isEmpty {
-            textDocumentProxy.adjustTextPosition(byCharacterOffset: after.count)
-        }
-        let endContext = textDocumentProxy.documentContextBeforeInput ?? ""
-        if !after.isEmpty {
-            textDocumentProxy.adjustTextPosition(byCharacterOffset: -after.count)
-        }
-        let draft = endContext.count >= (before + after).count ? endContext : before + after
-        print("EMPATHY_DRAFT_READ before=\(before.count) after=\(after.count) end=\(endContext.count) total=\(draft.count) text=\(String(reflecting: draft))")
+        // Read the host field as one document, not as two cursor-relative
+        // fragments. A large positive offset clamps at the document end;
+        // reading only documentContextBeforeInput there gives the complete
+        // text currently in the box and avoids stale after-cursor context.
+        textDocumentProxy.adjustTextPosition(byCharacterOffset: 10_000)
+        let draft = textDocumentProxy.documentContextBeforeInput ?? ""
+        os_log(.error, "EMPATHY_DRAFT_READ total=%{public}d text=%{public}@", draft.count, String(reflecting: draft))
         return draft
     }
 
@@ -462,11 +454,21 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
             guard !text.isEmpty else { self.toolbarModel.setVoiceError("Type a message first."); return }
             self.toolbarModel.setSpeaking(true)
             do {
-                let result = try await RewriteAPI.speakText(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), text: text, persona: self.toolbarModel.voicePersonaID)
+                let persona = self.toolbarModel.voicePersonaID
+                let rewrite = try await RewriteAPI.rewrite(
+                    baseURL: RewriteSettings.apiURL(),
+                    token: RewriteSettings.apiToken(),
+                    text: text,
+                    persona: persona,
+                    surface: "ios_keyboard",
+                    distinctID: RewriteSettings.distinctID()
+                )
+                os_log(.error, "EMPATHY_SPEAK_REWRITE persona=%{public}@ original=%{public}@ replacement=%{public}@", persona, String(reflecting: rewrite.original), String(reflecting: rewrite.replacement))
+                let spoken = try await RewriteAPI.speakText(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), text: rewrite.replacement, persona: persona)
                 let session = AVAudioSession.sharedInstance()
                 try session.setCategory(.playback, mode: .spokenAudio)
                 try session.setActive(true)
-                self.voicePlayer = try AVAudioPlayer(data: result.audio)
+                self.voicePlayer = try AVAudioPlayer(data: spoken.audio)
                 self.voicePlayer?.delegate = self
                 self.voicePlayer?.play()
             } catch {
