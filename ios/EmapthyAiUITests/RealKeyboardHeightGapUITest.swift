@@ -70,8 +70,8 @@ final class RealKeyboardHeightGapUITest: XCTestCase {
         // individually correct. Type real text with the keyboard's own
         // keys, trigger a real rewrite (real network call), and remeasure.
         typeOnRealKeyboard("please fix this now", in: app)
-        let rewriteButton = app.buttons["personaButton_corporate"]
-        XCTAssertTrue(rewriteButton.waitForExistence(timeout: 5), "Corporate persona button not found")
+        let rewriteButton = app.buttons["rewriteButton"]
+        XCTAssertTrue(rewriteButton.waitForExistence(timeout: 5), "Rewrite button not found")
         // The button's accessibility frame reports a bogus y (≈ -1, far off
         // the keyboard) on iOS 26, so element.tap() fails hit-point
         // computation. Its x/width are sane, and the button sits at the top

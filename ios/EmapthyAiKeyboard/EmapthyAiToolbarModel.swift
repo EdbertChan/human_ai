@@ -34,6 +34,7 @@ final class EmapthyAiToolbarModel: ObservableObject {
     func update(_ newState: ReviewFlow.State) { state = newState }
     func voiceTapped() { onVoiceTap?() }
     func speakTapped() { onSpeakTap?() }
+    func rewriteTapped() { onSubmit?(voicePersonaID) }
     func setRecordingVoice(_ recording: Bool) { isRecordingVoice = recording; if recording { voiceError = nil } }
     func setVoiceError(_ message: String) { isRecordingVoice = false; voiceError = message }
     func setSpeaking(_ speaking: Bool) { isSpeaking = speaking; if speaking { voiceError = nil } }

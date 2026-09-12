@@ -163,8 +163,8 @@ final class CorporateRewriteAppStoreCaptureUITests: XCTestCase {
         Thread.sleep(forTimeInterval: 1.5)
 
         let keyboardRoot = app.otherElements["realKeyboardRoot"]
-        let corporate = app.buttons["personaButton_corporate"]
-        XCTAssertTrue(corporate.waitForExistence(timeout: 10), "Corporate persona button never appeared")
+        let corporate = app.buttons["rewriteButton"]
+        XCTAssertTrue(corporate.waitForExistence(timeout: 10), "Rewrite button never appeared")
         let keyboardFrame = keyboardRoot.frame
         keyboardRoot.coordinate(withNormalizedOffset: CGVector(
             dx: (corporate.frame.midX - keyboardFrame.minX) / keyboardFrame.width,

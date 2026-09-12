@@ -18,28 +18,36 @@ struct EmapthyAiToolbarView: View {
         }.padding(.horizontal, 6).padding(.vertical, 4)
     }
     private var idleRow: some View {
-        HStack(spacing: 6) {
-            Menu {
-                ForEach(model.personas.filter(\.available), id: \.id) { option in
-                    Button {
-                        model.selectVoicePersona(option)
-                    } label: {
-                        if model.voicePersonaID == option.id { Label(option.label, systemImage: "checkmark") }
-                        else { Text(option.label) }
+        VStack(spacing: 6) {
+            HStack(spacing: 6) {
+                Menu {
+                    ForEach(model.personas.filter(\.available), id: \.id) { option in
+                        Button {
+                            model.selectVoicePersona(option)
+                        } label: {
+                            if model.voicePersonaID == option.id { Label(option.label, systemImage: "checkmark") }
+                            else { Text(option.label) }
+                        }
                     }
-                }
-            } label: {
-                Text("Voice: \(voicePersonaLabel)").font(.system(size: 12, weight: .semibold)).foregroundColor(textPrimary).padding(.horizontal, 8).padding(.vertical, 10).background(keepButtonGray).cornerRadius(18)
-            }.accessibilityIdentifier("voicePersonaMenu").accessibilityLabel("Voice mode, \(voicePersonaLabel)")
-            Button(action: { model.voiceTapped() }) {
-                Circle().fill(model.isRecordingVoice ? Color.red : brandPrimary).frame(width: 38, height: 38).overlay(Image(systemName: model.isRecordingVoice ? "stop.fill" : "mic.fill").font(.system(size: 15, weight: .bold)).foregroundColor(.white))
-            }.accessibilityLabel(model.isRecordingVoice ? "Stop \(voicePersonaLabel) voice recording" : "Record \(voicePersonaLabel) voice").accessibilityHint("Tap to record, then tap again to send")
-            Button(action: { model.speakTapped() }) {
-                Label(model.isSpeaking ? "Stop" : "Speak", systemImage: model.isSpeaking ? "stop.fill" : "speaker.wave.2.fill")
-                    .font(.system(size: 12, weight: .semibold)).foregroundColor(textPrimary).padding(.horizontal, 8).padding(.vertical, 10)
-            }.disabled(model.isRecordingVoice).background(keepButtonGray).cornerRadius(18).accessibilityIdentifier("speakDraftButton").accessibilityLabel(model.isSpeaking ? "Stop speaking" : "Speak draft")
+                } label: {
+                    Label(voicePersonaLabel, systemImage: "chevron.down")
+                        .font(.system(size: 13, weight: .semibold)).foregroundColor(textPrimary)
+                        .padding(.horizontal, 10).padding(.vertical, 10).background(keepButtonGray).cornerRadius(18)
+                }.accessibilityIdentifier("voicePersonaMenu").accessibilityLabel("Voice mode, \(voicePersonaLabel)")
+                Button("Rewrite") { model.rewriteTapped() }
+                    .buttonStyle(EmapthyAiActionButtonStyle(background: brandPrimary, foreground: .white))
+                    .accessibilityIdentifier("rewriteButton")
+                Button { model.speakTapped() } label: {
+                    Label(model.isSpeaking ? "Stop" : "Speak", systemImage: model.isSpeaking ? "stop.fill" : "speaker.wave.2.fill")
+                }.buttonStyle(EmapthyAiActionButtonStyle(background: keepButtonGray, foreground: textPrimary))
+                    .disabled(model.isRecordingVoice).accessibilityIdentifier("speakDraftButton").accessibilityLabel(model.isSpeaking ? "Stop speaking" : "Speak draft")
+            }
             if model.hasFullAccess {
-                ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 6) { ForEach(model.personas, id: \.id) { personaButton($0) } } }.fixedSize(horizontal: false, vertical: true)
+                Button(action: { model.voiceTapped() }) {
+                    Label(model.isRecordingVoice ? "Stop voice input" : "Voice input", systemImage: model.isRecordingVoice ? "stop.fill" : "mic.fill")
+                }.buttonStyle(EmapthyAiActionButtonStyle(background: model.isRecordingVoice ? .red : keepButtonGray, foreground: model.isRecordingVoice ? .white : textPrimary))
+                    .accessibilityLabel(model.isRecordingVoice ? "Stop \(voicePersonaLabel) voice recording" : "Record \(voicePersonaLabel) voice")
+                    .accessibilityHint("Tap to record speech input, then tap again to finish")
             } else {
                 Text("Enable Full Access in Settings").font(.system(size: 14, weight: .semibold)).foregroundColor(textSecondary).frame(maxWidth: .infinity).padding(.vertical, 10).background(keepButtonGray).cornerRadius(18)
             }

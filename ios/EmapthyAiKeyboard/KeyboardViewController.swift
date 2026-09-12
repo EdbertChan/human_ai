@@ -44,16 +44,19 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
     // frame. The height is now updated live via updateKeyboardHeight(for:)
     // whenever the toolbar's status changes, instead of picking one fixed
     // value that's wrong for every state but one.
-    // 332 = measured live via EmapthyAiUITests.RealKeyboardIdleClipUITest
-    // against the real system-hosted extension: the idle persona row needs
-    // 57pt (37pt buttons + 12pt row padding + 8pt body padding) and
+    // 388 = the prior 332pt compact budget plus the second voice-input row.
+    // Re-run EmapthyAiUITests.RealKeyboardIdleClipUITest after changing this
+    // toolbar structure; it measures the real system-hosted extension and
+    // catches clipped controls and dead space.
+    // The original 332pt budget covered the idle persona row's 57pt (37pt
+    // buttons + 12pt row padding + 8pt body padding) and
     // KeyboardKit's key area (4 rows + its own toolbar + 4pt stack spacing)
     // measured 275pt. At the old 318 the button tops sat 2.7pt from the
     // keyboard's top edge (should be ~10pt) — the visible "buttons cut off
     // flat" — while the keys were already flush at the bottom (gap 0). If
     // KeyboardKit's row pitch drifts again (54 <-> 56pt has happened),
     // re-run that UI test and retune ALL height constants together.
-    private static let compactKeyboardHeight: CGFloat = 332
+    private static let compactKeyboardHeight: CGFloat = 388
     // Expanded height verified against the real device via
     // EmapthyAiUITests.ReviewCardScrollUITests, which drives a real swipe
     // inside the actual KeyboardView hierarchy (not just an isolated

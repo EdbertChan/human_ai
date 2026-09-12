@@ -23,8 +23,8 @@ final class RealKeyboardIdleClipUITest: XCTestCase {
         print("DIAG idle realKeyboardRoot.frame=\(rootFrame)")
 
         // Corporate always exists (defaults and every server config).
-        let corporate = app.buttons["personaButton_corporate"]
-        XCTAssertTrue(corporate.waitForExistence(timeout: 10), "corporate persona button never appeared")
+        let corporate = app.buttons["Voice mode, Corporate"]
+        XCTAssertTrue(corporate.waitForExistence(timeout: 10), "style menu never appeared")
         let corporateFrame = corporate.frame
         print("DIAG corporate.frame=\(corporateFrame)")
         print("DIAG buttonTopInset=\(corporateFrame.minY - rootFrame.minY) buttonHeight=\(corporateFrame.height)")
