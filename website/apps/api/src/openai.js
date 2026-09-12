@@ -1,6 +1,24 @@
 import { CORPORATE_SYSTEM_PROMPT, formatRewriteInput, logLlmRequestIfEnabled, normalizeModelResult, parseJsonText } from "./llm.js";
 import { PERSONAS } from "./personas.js";
 
+export async function transcribeAudio({ audio, apiKey, model = "gpt-4o-mini-transcribe", fetchImpl = fetch } = {}) {
+  if (!(audio instanceof Blob) || audio.size === 0) throw new TypeError("audio is required.");
+  if (!apiKey) throw new Error("OpenAI transcription is not configured.");
+  const extension = { "audio/mp4": "m4a", "audio/mpeg": "mp3", "audio/wav": "wav", "audio/webm": "webm" }[audio.type] ?? "audio";
+  const form = new FormData();
+  form.append("file", audio, `voice.${extension}`);
+  form.append("model", model);
+  const response = await fetchImpl("https://api.openai.com/v1/audio/transcriptions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: form
+  });
+  if (!response.ok) throw new Error(`OpenAI transcription failed (${response.status}).`);
+  const result = await response.json();
+  if (typeof result.text !== "string" || !result.text.trim()) throw new Error("The transcription response was empty.");
+  return result.text.trim();
+}
+
 function extractOutputText(response) {
   if (typeof response.output_text === "string") return response.output_text;
   for (const item of response.output ?? []) {

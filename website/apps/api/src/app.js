@@ -1,5 +1,5 @@
 import { validateRewriteRequest } from "./policy.js";
-import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
+import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI, transcribeAudio } from "./openai.js";
 import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
 import { rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
@@ -362,18 +362,63 @@ export function createHandler(env = process.env, dependencies = {}) {
       const persona = form.get("persona");
       const distinctId = form.get("distinctId");
       const audio = form.get("audio");
-      if (persona !== "corporate" || !isValidDistinctId(distinctId) || !(audio instanceof File)) {
-        return json(400, { error: "invalid_request", message: "distinctId, corporate persona, and audio are required." }, cors);
+      if (!PERSONAS[persona] || !isValidDistinctId(distinctId) || !(audio instanceof File)) {
+        return json(400, { error: "invalid_request", message: "distinctId, supported persona, and audio are required." }, cors);
       }
+      const authorizationError = await authorizePersona(request, distinctId, persona);
+      if (authorizationError) return json(authorizationError.status, { error: authorizationError.error, message: authorizationError.message }, cors);
       const audioBytes = await audio.arrayBuffer();
       if (audioBytes.byteLength === 0 || audioBytes.byteLength > 15 * 1024 * 1024) {
         return json(400, { error: "invalid_request", message: "audio is empty or too large." }, cors);
       }
-      return json(200, {
-        persona,
-        audio: Buffer.from(audioBytes).toString("base64"),
-        audioContentType: audio.type || "application/octet-stream"
-      }, { ...cors, "cache-control": "no-store" });
+      try {
+        const provider = selectProvider(env);
+        const rewriteApiKey = provider === "anthropic" ? env.ANTHROPIC_API_KEY : env.OPENAI_API_KEY;
+        if (!env.OPENAI_API_KEY || !rewriteApiKey) {
+          return json(503, { error: "voice_not_configured", message: "Configure transcription, rewrite, and speech providers." }, cors);
+        }
+        const resolvedPersona = resolvePersona({ persona });
+        const transcript = await (dependencies.transcribeAudio ?? transcribeAudio)({
+          audio: new Blob([audioBytes], { type: audio.type || "application/octet-stream" }),
+          apiKey: env.OPENAI_API_KEY,
+          model: env.OPENAI_TRANSCRIPTION_MODEL,
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        const rewritten = await (dependencies.voiceRewrite ?? defaultRewrite(provider))({
+          text: transcript,
+          apiKey: rewriteApiKey,
+          model: providerModel(provider, env),
+          resolvedPersona,
+          systemPrompt: resolvedPersona.systemPrompt,
+          policyVersion: resolvedPersona.version,
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        const tone = {
+          corporate: "Speak clearly and professionally.",
+          personable: "Speak warmly, naturally, and conversationally while staying professional.",
+          warm: "Speak with a positive, encouraging, reassuring, human tone.",
+          empathy: "Speak kindly and compassionately, as someone who genuinely cares."
+        }[persona] ?? "Speak clearly and naturally.";
+        const spoken = await synthesize({
+          text: rewritten.replacement,
+          tone,
+          voice: env.OPENAI_TTS_VOICE ?? "coral",
+          apiKey: env.OPENAI_API_KEY,
+          model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts",
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        return json(200, {
+          persona,
+          transcript,
+          replacement: rewritten.replacement,
+          policyVersion: resolvedPersona.version,
+          audio: Buffer.from(spoken.audio).toString("base64"),
+          audioContentType: spoken.contentType
+        }, { ...cors, "cache-control": "no-store" });
+      } catch (error) {
+        console.error("[voice-relay] provider failed", { name: error.name, message: error.message });
+        return json(502, { error: "voice_provider_failed", message: "Voice transformation failed." }, cors);
+      }
     }
 
     if (request.method === "POST" && url.pathname === "/v1/translate") {

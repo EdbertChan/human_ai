@@ -3,9 +3,20 @@ import test from "node:test";
 import { createHandler } from "../src/app.js";
 import { synthesizeSpeechWithOpenAI } from "../src/openai.js";
 
-const handler = createHandler({ NODE_ENV: "test" });
+const relayCalls = [];
+const handler = createHandler({ NODE_ENV: "test", OPENAI_API_KEY: "openai-test" }, {
+  transcribeAudio: async ({ audio }) => { relayCalls.push({ kind: "transcribe", bytes: audio.size }); return "this is shit"; },
+  voiceRewrite: async ({ text, resolvedPersona, systemPrompt }) => {
+    relayCalls.push({ kind: "rewrite", text, persona: resolvedPersona.id, systemPrompt });
+    return { replacement: `${resolvedPersona.id} transformed voice` };
+  },
+  synthesizeSpeech: async ({ text, tone, voice, model }) => {
+    relayCalls.push({ kind: "synthesize", text, tone, voice, model });
+    return { audio: new Uint8Array([9, 8, 7]), contentType: "audio/mpeg" };
+  }
+});
 
-test("voice relay returns the uploaded audio and corporate persona", async () => {
+test("voice relay transforms and returns the requested persona", async () => {
   const input = new Uint8Array([0, 1, 2, 250, 255]);
   const form = new FormData();
   form.set("distinctId", "0123456789abcdef0123456789abcdef");
@@ -16,11 +27,30 @@ test("voice relay returns the uploaded audio and corporate persona", async () =>
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.persona, "corporate");
-  assert.equal(body.audioContentType, "audio/mp4");
-  assert.deepEqual([...Buffer.from(body.audio, "base64")], [...input]);
+  assert.equal(body.audioContentType, "audio/mpeg");
+  assert.equal(body.transcript, "this is shit");
+  assert.equal(body.replacement, "corporate transformed voice");
+  assert.deepEqual([...Buffer.from(body.audio, "base64")], [9, 8, 7]);
 });
 
-test("voice relay rejects a non-corporate persona", async () => {
+test("voice relay transforms warm voice with the warm policy", async () => {
+  const form = new FormData();
+  form.set("distinctId", "0123456789abcdef0123456789abcdef");
+  form.set("persona", "warm");
+  form.set("audio", new File([new Uint8Array([1, 2, 3])], "voice.m4a", { type: "audio/mp4" }));
+
+  const response = await handler(new Request("https://example.test/v1/voice/relay", { method: "POST", body: form }));
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.persona, "warm");
+  assert.equal(body.policyVersion, "warm@v1");
+  assert.equal(body.replacement, "warm transformed voice");
+  assert.deepEqual([...Buffer.from(body.audio, "base64")], [9, 8, 7]);
+  assert.deepEqual(relayCalls.slice(-3).map(({ kind }) => kind), ["transcribe", "rewrite", "synthesize"]);
+  assert.match(relayCalls.at(-2).systemPrompt, /warm writing reviewer/i);
+});
+
+test("voice relay rejects an unsupported persona", async () => {
   const form = new FormData();
   form.set("distinctId", "0123456789abcdef0123456789abcdef");
   form.set("persona", "empathetic");
