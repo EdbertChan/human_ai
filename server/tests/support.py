@@ -10,6 +10,8 @@ from elevenlabs.core.api_error import ApiError
 
 from speech_service.main import app, get_client
 
+UNEXPECTED_PROVIDER_FAILURE = "fixture-unexpected-provider-body"
+
 
 class ObservedStream(httpx.AsyncByteStream):
     """Expose deterministic provider chunks and closure state."""
@@ -54,6 +56,25 @@ class CancellationStream(httpx.AsyncByteStream):
         self.started.set()
         await anyio.sleep_forever()
         yield b""
+
+    async def aclose(self) -> None:
+        """Record provider response cleanup."""
+        self.closed = True
+
+
+class UnexpectedFailureStream(httpx.AsyncByteStream):
+    """Raise a generic provider failure before or after audio."""
+
+    def __init__(self, chunks: tuple[bytes, ...] = ()) -> None:
+        """Configure chunks emitted before the generic failure."""
+        self.chunks = chunks
+        self.closed = False
+
+    async def __aiter__(self) -> AsyncIterator[bytes]:
+        """Yield configured audio and then raise a generic failure."""
+        for chunk in self.chunks:
+            yield chunk
+        raise RuntimeError(UNEXPECTED_PROVIDER_FAILURE)
 
     async def aclose(self) -> None:
         """Record provider response cleanup."""

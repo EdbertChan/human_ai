@@ -10,8 +10,8 @@ from dataclasses import dataclass
 from typing import Annotated, Final
 
 import anyio
+import httpx
 from elevenlabs.client import AsyncElevenLabs
-from elevenlabs.core.api_error import ApiError
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, StrictStr, field_validator
@@ -29,6 +29,9 @@ SPEECH_FAILURE_DETAIL: Final = "ElevenLabs speech generation failed."
 INITIAL_TIMEOUT_DETAIL: Final = "ElevenLabs initial audio chunk timed out."
 BLANK_ERROR_TYPE: Final = "blank_string"
 BLANK_ERROR_MESSAGE: Final = "must not be blank"
+STREAM_FAILURE_MESSAGE: Final = "ElevenLabs speech stream failed."
+PROVIDER_TIMEOUT: Final = 240.0
+PROVIDER_FAILURE: Final = Exception
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,6 +43,29 @@ class ConfigurationError(Exception):
     def __str__(self) -> str:
         """Return a safe configuration error without exposing its value."""
         return f"Invalid or missing {self.setting_name}."
+
+
+class SpeechStreamError(Exception):
+    """Terminate a started stream without exposing provider details."""
+
+    def __str__(self) -> str:
+        """Return the fixed safe message exposed to outer ASGI logging."""
+        return STREAM_FAILURE_MESSAGE
+
+
+class ClientUnavailableError(Exception):
+    """Report dependency access outside the application lifespan."""
+
+
+class ClientLifecycle:
+    """Hold the provider client only while the application is running."""
+
+    def __init__(self) -> None:
+        """Initialize without an active provider client."""
+        self.provider: AsyncElevenLabs | None = None
+
+
+_client_lifecycle: Final = ClientLifecycle()
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,16 +117,35 @@ def settings() -> Settings:
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     """Validate configuration before accepting requests."""
-    settings()
-    yield
+    config = settings()
+    async with httpx.AsyncClient(timeout=PROVIDER_TIMEOUT, follow_redirects=True) as http_client:
+        _client_lifecycle.provider = AsyncElevenLabs(
+            api_key=config.api_key,
+            httpx_client=http_client,
+        )
+        try:
+            yield
+        finally:
+            _client_lifecycle.provider = None
 
 
 def get_client() -> AsyncElevenLabs:
-    """Create the request-scoped ElevenLabs client dependency."""
-    return AsyncElevenLabs(api_key=settings().api_key)
+    """Return the application-owned ElevenLabs client dependency."""
+    provider = _client_lifecycle.provider
+    if provider is None:
+        raise ClientUnavailableError
+    return provider
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+async def _initial_chunk(chunks: AsyncIterator[bytes], deadline_seconds: float) -> bytes:
+    with anyio.fail_after(deadline_seconds):
+        async for chunk in chunks:
+            if chunk:
+                return chunk
+    raise HTTPException(status.HTTP_502_BAD_GATEWAY, SPEECH_FAILURE_DETAIL)
 
 
 @app.post("/v1/speech", response_class=StreamingResponse)
@@ -122,18 +167,14 @@ async def speech(
             )
         )
         chunks = response.data.__aiter__()
-        with anyio.fail_after(config.initial_chunk_timeout):
-            async for chunk in chunks:
-                if chunk:
-                    first_chunk = chunk
-                    break
-            else:
-                await stack.aclose()
-                raise HTTPException(status.HTTP_502_BAD_GATEWAY, SPEECH_FAILURE_DETAIL)
+        first_chunk = await _initial_chunk(chunks, config.initial_chunk_timeout)
     except TimeoutError as error:
         await stack.aclose()
         raise HTTPException(status.HTTP_504_GATEWAY_TIMEOUT, INITIAL_TIMEOUT_DETAIL) from error
-    except ApiError as error:
+    except HTTPException:
+        await stack.aclose()
+        raise
+    except PROVIDER_FAILURE as error:
         await stack.aclose()
         raise HTTPException(status.HTTP_502_BAD_GATEWAY, SPEECH_FAILURE_DETAIL) from error
     except anyio.get_cancelled_exc_class():
@@ -149,12 +190,12 @@ async def speech(
             async for chunk in chunks:
                 if chunk:
                     yield chunk
-        except ApiError:
+        except PROVIDER_FAILURE:
             logger.warning(
                 "elevenlabs_stream_failed",
                 extra={"request_id": request_id or "unavailable"},
             )
-            raise
+            raise SpeechStreamError from None
         finally:
             with anyio.CancelScope(shield=True):
                 await stack.aclose()

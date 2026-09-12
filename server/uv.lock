@@ -488,13 +488,13 @@ dependencies = [
     { name = "anyio" },
     { name = "elevenlabs" },
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "basedpyright" },
-    { name = "httpx" },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -504,13 +504,13 @@ requires-dist = [
     { name = "anyio", specifier = ">=4.8" },
     { name = "elevenlabs", specifier = ">=2.0" },
     { name = "fastapi", specifier = ">=0.115" },
+    { name = "httpx", specifier = ">=0.28" },
     { name = "uvicorn", specifier = ">=0.34" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "basedpyright", specifier = ">=1.28" },
-    { name = "httpx", specifier = ">=0.28" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "ruff", specifier = ">=0.11" },
 ]

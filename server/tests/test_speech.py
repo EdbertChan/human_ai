@@ -9,11 +9,16 @@ import anyio
 import httpx
 import pytest
 from elevenlabs.client import AsyncElevenLabs
-from elevenlabs.core.api_error import ApiError
 from fastapi import status
 from starlette.types import Message, Scope
 
-from speech_service.main import ConfigurationError, app, get_client, settings
+from speech_service.main import (
+    ConfigurationError,
+    SpeechStreamError,
+    app,
+    get_client,
+    settings,
+)
 from tests.support import ObservedStream, post_with_provider
 
 EXPECTED_TIMEOUT = 10.0
@@ -271,12 +276,14 @@ async def test_post_start_failure_logs_only_request_id(
         provider = AsyncElevenLabs(api_key="test", httpx_client=provider_http)
 
         # When / Then
-        with pytest.raises(ApiError):
+        with pytest.raises(SpeechStreamError) as caught:
             await post_with_provider(
                 provider,
                 {"text": "SECRET_FIXTURE_TEXT", "tone": "SECRET_FIXTURE_TONE"},
             )
 
+    expect(condition=str(caught.value) == "ElevenLabs speech stream failed.")
+    expect(condition="fixture-provider-body" not in str(caught.value))
     expect(condition=len(caplog.records) == 1)
     record = caplog.records[0]
     expect(condition=record.message == "elevenlabs_stream_failed")
