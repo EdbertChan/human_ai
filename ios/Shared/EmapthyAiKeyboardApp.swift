@@ -1,13 +1,11 @@
-import KeyboardKitPro
+import KeyboardKit
 
-// Shared between the app and keyboard extension targets, per KeyboardKit's
-// own Getting-Started guide — both need the same config to set up licensing
-// and locales consistently.
+// Shared between the app and keyboard extension targets so both use the same
+// KeyboardKit app configuration and locale set.
 extension KeyboardApp {
     static var emapthyAi: KeyboardApp {
         .init(
             name: "EmapthyAi",
-            licenseKey: KeyboardKitLicense.key,
             locales: [.english]
         )
     }

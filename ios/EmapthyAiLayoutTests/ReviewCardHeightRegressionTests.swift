@@ -1,9 +1,9 @@
 import XCTest
 import SwiftUI
-import KeyboardKitPro
+import KeyboardKit
 
 // Proves the root cause of the "review card collapses, only scrolling
-// reveals the rest" bug: the KeyboardKit-based controller has no explicit
+// reveals the rest" bug: the keyboard-based controller has no explicit
 // self-sizing height request, so iOS gives it the standard custom-keyboard
 // default (documented/commonly measured as ~216pt on non-Pro-Max iPhones in
 // portrait) — which is smaller than what the review card actually needs.
@@ -17,10 +17,7 @@ final class ReviewCardHeightRegressionTests: XCTestCase {
     @MainActor
     private func makeReviewingContentView() async throws -> (view: EmapthyAiCustomKeyboardView, controller: KeyboardViewController) {
         let vc = KeyboardViewController()
-        let setupDone = expectation(description: "KeyboardKit Pro setup completes")
-        vc.setupCompletionForTesting = { _ in setupDone.fulfill() }
         vc.loadViewIfNeeded()
-        await fulfillment(of: [setupDone], timeout: 15)
 
         let toolbarModel = EmapthyAiToolbarModel()
         toolbarModel.hasFullAccess = true

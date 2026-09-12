@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import KeyboardKitPro
+import KeyboardKit
 
 // Debug-only host for EmapthyAiUITests to drive the real production review
 // card with real touch events, since the keyboard extension itself can't be
@@ -22,16 +22,8 @@ final class ReviewCardUITestHostViewController: UIViewController {
 
         let controller = KeyboardViewController()
         keyboardController = controller
-        // EmapthyAiCustomKeyboardView reads controller.state/services, which
-        // KeyboardKit Pro only populates once its async license setup (a
-        // real network check) completes — attaching before that either
-        // crashes or renders with an empty/invalid state.
-        controller.setupCompletionForTesting = { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.attachContent(controller: controller)
-            }
-        }
         controller.loadViewIfNeeded()
+        attachContent(controller: controller)
     }
 
     private func attachContent(controller: KeyboardViewController) {

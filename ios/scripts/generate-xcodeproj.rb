@@ -123,7 +123,7 @@ ui_tests_target = project.new_target(:ui_test_bundle, "EmapthyAiUITests", :ios, 
 # rather than importing the extension as a module.
 app_target.add_file_references(app_swift + keyboard_swift + shared_files)
 keyboard_target.add_file_references(keyboard_swift + shared_files)
-action_target.add_file_references(action_swift + shared_files)
+action_target.add_file_references(action_swift + shared_files.reject { |file| File.basename(file.path) == "EmapthyAiKeyboardApp.swift" })
 app_target.resources_build_phase.add_file_reference(app_assets)
 # Compiles KeyboardViewController.swift directly into the test bundle (same
 # pattern as Shared/ across every other target) instead of importing the
@@ -137,29 +137,15 @@ link_frameworks(action_target, project, framework_refs, %w[UIKit Foundation Unif
 link_frameworks(layout_tests_target, project, framework_refs, %w[UIKit Foundation])
 link_frameworks(ui_tests_target, project, framework_refs, %w[XCTest])
 
-# --- KeyboardKit / KeyboardKit Pro ---
+# --- KeyboardKit ---
 package_cache = {}
 keyboard_kit = remote_package(
   project, package_cache, "https://github.com/KeyboardKit/KeyboardKit.git",
   { "kind" => "upToNextMajorVersion", "minimumVersion" => "9.0.0" }
 )
-keyboard_kit_pro = remote_package(
-  project, package_cache, "https://github.com/KeyboardKit/KeyboardKitPro.git",
-  { "kind" => "upToNextMajorVersion", "minimumVersion" => "9.0.0" }
-)
 link_package_product(project, app_target, keyboard_kit, "KeyboardKit")
 link_package_product(project, keyboard_target, keyboard_kit, "KeyboardKit")
-# Per KeyboardKit's own Getting-Started doc: "KeyboardKit must be linked to
-# the main app target *and* its keyboard extension, while KeyboardKit Pro
-# must *only* be added to the app." The extension reaches Pro at runtime
-# through the app's embedded framework, via the runpath search paths below —
-# linking Pro directly into the extension too is explicitly wrong per that
-# doc and would fight the embedding setup.
-link_package_product(project, app_target, keyboard_kit_pro, "KeyboardKitPro")
-# The layout snapshot test target isn't embedded in the app the way the real
-# extension is, so it needs both packages linked directly to be self-contained.
 link_package_product(project, layout_tests_target, keyboard_kit, "KeyboardKit")
-link_package_product(project, layout_tests_target, keyboard_kit_pro, "KeyboardKitPro")
 
 # --- Embed both extensions into the app ---
 app_target.add_dependency(keyboard_target)
@@ -174,6 +160,7 @@ end
 # --- Per-target build settings ---
 app_target.build_configurations.each do |config|
   config.build_settings.merge!(common_build_settings(BUNDLE_ID))
+  config.build_settings["EMAPTHYAI_DEV_API_URL"] = "http://192.168.1.106:8787" if config.name == "Debug"
   config.build_settings["INFOPLIST_FILE"] = "EmapthyAi/Info.plist"
   config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "EmapthyAi/EmapthyAi.entitlements"
   config.build_settings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIcon"
@@ -182,12 +169,10 @@ end
 
 keyboard_target.build_configurations.each do |config|
   config.build_settings.merge!(common_build_settings("#{BUNDLE_ID}.Keyboard"))
+  config.build_settings["EMAPTHYAI_DEV_API_URL"] = "http://192.168.1.106:8787" if config.name == "Debug"
   config.build_settings["INFOPLIST_FILE"] = "EmapthyAiKeyboard/Info.plist"
   config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "EmapthyAiKeyboard/EmapthyAiKeyboard.entitlements"
   config.build_settings["SKIP_INSTALL"] = "YES"
-  # Required for the extension to find KeyboardKitPro, which is only linked
-  # into the app target and reached through its embedded Frameworks dir —
-  # per KeyboardKit's own doc, omitting this crashes at runtime, not build time.
   config.build_settings["LD_RUNPATH_SEARCH_PATHS"] = ["$(inherited)", "@executable_path/../../Frameworks"]
 end
 

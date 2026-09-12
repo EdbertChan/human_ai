@@ -1,10 +1,8 @@
 import SwiftUI
-import KeyboardKitPro
+import KeyboardKit
 
-// Wraps KeyboardKit's real keyboard (real key layout, real Pro autocomplete)
-// and adds our own rewrite bar above KeyboardKit's own toolbar, rather than
-// replacing it — `params.view` below is KeyboardKit's default autocomplete
-// toolbar, so it stays intact.
+// Wraps KeyboardKit's real keyboard and adds our own rewrite bar above
+// KeyboardKit's toolbar, rather than replacing it.
 struct EmapthyAiCustomKeyboardView: View {
     unowned let controller: KeyboardInputViewController
     @ObservedObject var toolbarModel: EmapthyAiToolbarModel

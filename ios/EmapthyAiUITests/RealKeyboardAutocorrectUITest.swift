@@ -3,7 +3,7 @@ import XCTest
 // Native-parity autocorrect check against the real, system-hosted EmapthyAi
 // extension: typing a misspelling and then space must replace the word the
 // way Apple's own keyboard does. KeyboardKit only applies an autocorrection
-// when its (license-gated) Pro autocomplete service has published an
+// when its autocomplete service has published an
 // autocorrect suggestion — with a failed/absent license the keyboard still
 // types fine but silently never corrects, so this test is the one signal
 // that the whole chain (license -> LocalAutocompleteService -> suggestion ->

@@ -18,7 +18,21 @@ struct EmapthyAiToolbarView: View {
     }
     private var idleRow: some View {
         HStack(spacing: 6) {
-            Circle().fill(model.conversationContextEnabled ? Color.green : brandPrimary).frame(width: 34, height: 34).overlay(Text("N").font(.system(size: 16, weight: .bold)).foregroundColor(.white)).overlay(alignment: .bottomTrailing) { if model.conversationContextEnabled { Circle().fill(.white).frame(width: 9, height: 9).padding(2) } }.onLongPressGesture(minimumDuration: 0.55) { model.toggleConversationContext() }.accessibilityLabel(model.conversationContextEnabled ? "Conversation context on" : "Conversation context off").accessibilityHint("Long press to toggle")
+            Menu {
+                ForEach(model.personas.filter(\.available), id: \.id) { option in
+                    Button {
+                        model.selectVoicePersona(option)
+                    } label: {
+                        if model.voicePersonaID == option.id { Label(option.label, systemImage: "checkmark") }
+                        else { Text(option.label) }
+                    }
+                }
+            } label: {
+                Text("Voice: \(voicePersonaLabel)").font(.system(size: 12, weight: .semibold)).foregroundColor(textPrimary).padding(.horizontal, 8).padding(.vertical, 10).background(keepButtonGray).cornerRadius(18)
+            }.accessibilityIdentifier("voicePersonaMenu").accessibilityLabel("Voice mode, \(voicePersonaLabel)")
+            Button(action: { model.voiceTapped() }) {
+                Circle().fill(model.isRecordingVoice ? Color.red : brandPrimary).frame(width: 38, height: 38).overlay(Image(systemName: model.isRecordingVoice ? "stop.fill" : "mic.fill").font(.system(size: 15, weight: .bold)).foregroundColor(.white))
+            }.accessibilityLabel(model.isRecordingVoice ? "Stop \(voicePersonaLabel) voice recording" : "Record \(voicePersonaLabel) voice").accessibilityHint("Tap to record, then tap again to send")
             if model.hasFullAccess {
                 ScrollView(.horizontal, showsIndicators: false) { HStack(spacing: 6) { ForEach(model.personas, id: \.id) { personaButton($0) } } }.fixedSize(horizontal: false, vertical: true)
             } else {
@@ -26,6 +40,7 @@ struct EmapthyAiToolbarView: View {
             }
         }.padding(.horizontal, 6).padding(.vertical, 6)
     }
+    private var voicePersonaLabel: String { model.personas.first(where: { $0.id == model.voicePersonaID })?.label ?? "Corporate" }
     private func personaButton(_ option: PersonaOption) -> some View { Button(action: { model.personaTapped(option) }) { HStack(spacing: 4) { if !option.available { Image(systemName: "lock.fill").font(.system(size: 10, weight: .semibold)) }; Text(option.label).font(.system(size: 14, weight: .semibold)) }.foregroundColor(option.available ? .white : textSecondary).padding(.horizontal, 14).padding(.vertical, 10) }.background(option.available ? brandPrimary : keepButtonGray).cornerRadius(18).accessibilityLabel(option.available ? "Rewrite with \(option.label)" : "\(option.label) is not available yet").accessibilityIdentifier(option.id == "empathy" ? "empathyRewriteButton" : "personaButton_\(option.id)") }
     private func requestRow(_ option: PersonaOption) -> some View { HStack { Image(systemName: "lock.fill").foregroundColor(brandPrimary); Text("\(option.label) is coming soon").font(.system(size: 12, weight: .semibold)).frame(maxWidth: .infinity, alignment: .leading); Button("Request") { model.confirmPersonaRequest() }.buttonStyle(EmapthyAiActionButtonStyle(background: brandPrimary, foreground: .white)); Button { model.dismissPersonaRequest() } label: { Image(systemName: "xmark") }.accessibilityLabel("Not now") }.padding(10).background(Color.white).cornerRadius(10) }
     private func acknowledgementRow(_ label: String) -> some View { HStack { Image(systemName: "checkmark.circle.fill").foregroundColor(brandPrimary); Text("Request received — thanks for your interest in \(label).").font(.system(size: 12, weight: .semibold)).foregroundColor(textSecondary).lineLimit(1) }.padding(10).background(Color.white).cornerRadius(10) }

@@ -260,6 +260,50 @@ final class CorporateRewriteAppStoreCaptureUITests: XCTestCase {
     }
 }
 
+final class CorporateVoiceMicrophoneUITests: XCTestCase {
+    func testEmpathyAiMicrophoneKeepsKeyboardAlive() throws {
+        let app = XCUIApplication(bundleIdentifier: "com.apple.MobileSMS")
+        app.terminate()
+        app.launch()
+        for label in ["OK", "Continue"] {
+            let button = app.buttons[label].firstMatch
+            if button.waitForExistence(timeout: 2) { button.tap() }
+        }
+        let sampleThread = app.staticTexts["+1 (888) 555-1212"].firstMatch
+        XCTAssertTrue(sampleThread.waitForExistence(timeout: 10))
+        sampleThread.tap()
+        let textField = app.textFields["iMessage"].firstMatch
+        XCTAssertTrue(textField.waitForExistence(timeout: 10))
+        textField.tap()
+        try switchToEmapthyAiKeyboard(in: app)
+
+        let allowMonitor = addUIInterruptionMonitor(withDescription: "Microphone permission") { alert in
+            let allow = alert.buttons["Allow"].firstMatch
+            if allow.exists { allow.tap(); return true }
+            return false
+        }
+        defer { removeUIInterruptionMonitor(allowMonitor) }
+
+        let voiceMode = app.buttons["Voice mode, Corporate"].firstMatch
+        XCTAssertTrue(voiceMode.waitForExistence(timeout: 10))
+        voiceMode.tap()
+        let personable = app.buttons["Personable"].firstMatch
+        XCTAssertTrue(personable.waitForExistence(timeout: 5))
+        personable.tap()
+
+        let record = app.buttons["Record Personable voice"].firstMatch
+        XCTAssertTrue(record.waitForExistence(timeout: 10))
+        record.tap()
+        _ = app.waitForExistence(timeout: 2)
+        XCTAssertTrue(app.otherElements["realKeyboardRoot"].waitForExistence(timeout: 5), "EmpathyAI keyboard disappeared after microphone tap")
+
+        let stop = app.buttons["Stop Personable voice recording"].firstMatch
+        XCTAssertTrue(stop.waitForExistence(timeout: 5))
+        stop.tap()
+        XCTAssertTrue(app.otherElements["realKeyboardRoot"].waitForExistence(timeout: 10), "EmpathyAI keyboard disappeared during voice relay/playback")
+    }
+}
+
 private let ReviewCardUITestHostLaunchArgument = "-UITestReviewCard"
 
 // One-time diagnostic (not a regression test): measures how much of the

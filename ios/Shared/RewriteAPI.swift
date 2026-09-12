@@ -18,7 +18,34 @@ struct PersonaConfig: Codable, Equatable {
     let variant: String
 }
 
+struct VoiceRelayResult: Codable, Equatable {
+    let persona: String
+    let audio: Data
+    let audioContentType: String
+
+    enum CodingKeys: String, CodingKey { case persona, audio, audioContentType }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        persona = try container.decode(String.self, forKey: .persona)
+        let encoded = try container.decode(String.self, forKey: .audio)
+        guard let decoded = Data(base64Encoded: encoded) else { throw RewriteAPIError.invalidResponse }
+        audio = decoded
+        audioContentType = try container.decode(String.self, forKey: .audioContentType)
+    }
+}
+
 enum RewriteAPI {
+    static func relayVoice(baseURL: String, token: String, distinctID: String, audio: Data, mimeType: String = "audio/mp4", persona: String = "corporate") async throws -> VoiceRelayResult {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/voice/relay", token: token)
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = multipartBody(boundary: boundary, distinctID: distinctID, persona: persona, audio: audio, mimeType: mimeType)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response, data: data, failure: "Voice relay failed")
+        return try JSONDecoder().decode(VoiceRelayResult.self, from: data)
+    }
+
     static func rewrite(baseURL: String, token: String, text: String, persona: String? = nil, surface: String? = nil, distinctID: String? = nil, conversation: [String] = []) async throws -> RewriteResult {
         var request = try makeRequest(baseURL: baseURL, path: "/v1/rewrite", token: token)
         var body: [String: Any] = ["text": text]
@@ -148,5 +175,16 @@ enum RewriteAPI {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if !token.isEmpty { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
         return request
+    }
+
+    private static func multipartBody(boundary: String, distinctID: String, persona: String, audio: Data, mimeType: String) -> Data {
+        var body = Data()
+        func append(_ string: String) { body.append(Data(string.utf8)) }
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"distinctId\"\r\n\r\n\(distinctID)\r\n")
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"persona\"\r\n\r\n\(persona)\r\n")
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"voice.m4a\"\r\nContent-Type: \(mimeType)\r\n\r\n")
+        body.append(audio)
+        append("\r\n--\(boundary)--\r\n")
+        return body
     }
 }

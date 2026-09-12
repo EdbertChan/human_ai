@@ -13,14 +13,21 @@ final class EmapthyAiToolbarModel: ObservableObject {
     @Published private(set) var requestPrompt: PersonaOption?
     @Published private(set) var requestAcknowledgedLabel: String?
     @Published var conversationContextEnabled: Bool = RewriteSettings.conversationContextEnabled()
+    @Published private(set) var isRecordingVoice = false
+    @Published private(set) var voiceError: String?
+    @Published private(set) var voicePersonaID = "corporate"
 
     var onSubmit: ((String?) -> Void)?
     var onAccept: (() -> Void)?
     var onKeepOriginal: (() -> Void)?
     var onPersonaTap: ((PersonaOption) -> Void)?
     var onPersonaRequest: ((String) -> Void)?
+    var onVoiceTap: (() -> Void)?
 
     func update(_ newState: ReviewFlow.State) { state = newState }
+    func voiceTapped() { onVoiceTap?() }
+    func setRecordingVoice(_ recording: Bool) { isRecordingVoice = recording; if recording { voiceError = nil } }
+    func setVoiceError(_ message: String) { isRecordingVoice = false; voiceError = message }
     func beginPersonaLoad() { personasLoading = true; personasError = nil; personas = [] }
     func applyPersonaConfig(_ config: PersonaConfig) {
         personasLoading = false
@@ -42,6 +49,10 @@ final class EmapthyAiToolbarModel: ObservableObject {
             requestAcknowledgedLabel = nil
             requestPrompt = option
         }
+    }
+    func selectVoicePersona(_ option: PersonaOption) {
+        guard option.available, personas.contains(option) else { return }
+        voicePersonaID = option.id
     }
     func toggleConversationContext() {
         conversationContextEnabled.toggle()
