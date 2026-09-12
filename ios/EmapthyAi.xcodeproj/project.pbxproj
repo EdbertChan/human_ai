@@ -7,125 +7,118 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		001126C426E5DB998E8492E4 /* EmapthyAiCustomKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BCAAAA81A3E9122A9B5091 /* EmapthyAiCustomKeyboardView.swift */; };
-		00C8D8C5C93AEBD0B13CD196 /* EmapthyAiToolbarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BED464812DF6F3AE77E4AC /* EmapthyAiToolbarModel.swift */; };
-		04C3B1BFC5E1EBEA8249A271 /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF4D0FE68977B15077E333C /* ReviewFlow.swift */; };
-		05E7674D6A92A79CC9BFF5E7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6374F65C4F73DBC6F5D0333D /* UIKit.framework */; };
-		066DF3F6123509922B3DC703 /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B33186250A99E897942A1C /* EmapthyAiKeyboardApp.swift */; };
-		069E1997394739F59938A09A /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = F91F62876278156694B8FDAB /* KeyboardKit */; };
-		07049A3EDAA1418AA305F69A /* EmapthyAiCustomKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BCAAAA81A3E9122A9B5091 /* EmapthyAiCustomKeyboardView.swift */; };
-		0C78F76839769D604740FF66 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC58C385C6ED8BA4F7F26FDA /* KeyboardViewController.swift */; };
-		1025E52CE9BBF3D936EFEA19 /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B33186250A99E897942A1C /* EmapthyAiKeyboardApp.swift */; };
-		11727BD289FFDBF7DFBAFEC9 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 890CD8646AFF427B21C6FC11 /* UniformTypeIdentifiers.framework */; };
-		1764436D8EEE594BE6E51A7A /* NativeKeyboardMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968018EC09C0B00AB01DF66B /* NativeKeyboardMetrics.swift */; };
-		1BB7E7885C9B7155E9785750 /* RealKeyboardIdleClipUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D273047D2CD3ED4B98AAA0A /* RealKeyboardIdleClipUITest.swift */; };
-		1BD5B5172EE8F835B5C2989E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF8B752B2FF7EF4FA46D421B /* Foundation.framework */; };
-		1C5AE5218C61A95B55846DCD /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4088F8A7092327BEA70C1D99 /* RewriteSettings.swift */; };
-		1C673AA2A19792A7423DACC8 /* NativeKeyboardMeasurementUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690B3D97885EC306A8E36C27 /* NativeKeyboardMeasurementUITest.swift */; };
-		22FE3E9BB628B886C1DFB4DD /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4088F8A7092327BEA70C1D99 /* RewriteSettings.swift */; };
-		29281D0D5770E6CAD60398F9 /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8414EFA3F2448C8B1D094E /* RewriteAPI.swift */; };
-		2AC095AAA4028E9C1682E5A7 /* KeyboardKitPro in Frameworks */ = {isa = PBXBuildFile; productRef = 213A23AF938E4266052A2A48 /* KeyboardKitPro */; };
-		2B0E25C11A89353C3961C936 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */; };
-		2D6E6417A8FA30BF3E6A0FEE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */; };
-		325957314208D5A8EAD61679 /* ToolbarPersonaModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5AB6A5275B6D08A5194BF6 /* ToolbarPersonaModelTests.swift */; };
-		3A063C3D75BD4D4863A38663 /* ReviewCardUITestHostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0CEE6AA9A742F9FAD697F6 /* ReviewCardUITestHostViewController.swift */; };
-		3D8046C3E37886432FBA9B61 /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6226F7BA75E8057DAD7D51 /* RewriteResult.swift */; };
-		3F48026B5134D52A1CF5661A /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8414EFA3F2448C8B1D094E /* RewriteAPI.swift */; };
-		45FA1AF3C84D9A6DAB8A0B9E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF8B752B2FF7EF4FA46D421B /* Foundation.framework */; };
-		48C3038ADCD9EDB1E138FDC0 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC58C385C6ED8BA4F7F26FDA /* KeyboardViewController.swift */; };
-		4D95342F1CE5942217553D91 /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FD7547FCEC5D13BF0CE9F7 /* Tokens.swift */; };
-		4F1A248B5FA76BF1D5461A16 /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF4D0FE68977B15077E333C /* ReviewFlow.swift */; };
-		5E85AA724057C33FDF3A5362 /* NativeKeyboardMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968018EC09C0B00AB01DF66B /* NativeKeyboardMetrics.swift */; };
-		6228EB92A4FAA0CA23CB7C56 /* KeyboardKitLicense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55773388A2736CA064DE8977 /* KeyboardKitLicense.swift */; };
-		62B95FE9870584A173C2832B /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8414EFA3F2448C8B1D094E /* RewriteAPI.swift */; };
-		64A262347F2A93A2C0CCAD90 /* RealKeyboardHeightGapUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B395B9E99A67B3213384F4 /* RealKeyboardHeightGapUITest.swift */; };
-		664F7AD775EBDCA25C2C76D1 /* NativeKeyboardMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 968018EC09C0B00AB01DF66B /* NativeKeyboardMetrics.swift */; };
-		6694BD287B0CD1EC02B64CF3 /* KeyboardKitLicense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55773388A2736CA064DE8977 /* KeyboardKitLicense.swift */; };
-		6804BF773593048E7EC35B5A /* EmapthyAiKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AD9B3A2F04DD4214679EC02C /* EmapthyAiKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		6CB5B2DB01E6FCB74C532F89 /* KeyboardKitPro in Frameworks */ = {isa = PBXBuildFile; productRef = D125B56352B055E6C8A69466 /* KeyboardKitPro */; };
-		7D4F803EAD466FE4435D5146 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5ADBBE184578BD0A08B0554 /* XCTest.framework */; };
-		8094403C8DA62622EB148EE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF8B752B2FF7EF4FA46D421B /* Foundation.framework */; };
-		814EDF4BCB41943C30280C1B /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B33186250A99E897942A1C /* EmapthyAiKeyboardApp.swift */; };
-		8EF41802FE66C4DBAA170706 /* KeyboardKitLicense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55773388A2736CA064DE8977 /* KeyboardKitLicense.swift */; };
-		913954B377F89BED4F0F642E /* KeyboardLayoutSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9CA93E2C0D9917C5B1A34E /* KeyboardLayoutSnapshotTests.swift */; };
-		940A0FF8E9378E4AF6277578 /* EmapthyAiToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C19180B278CECF4035EEDA0 /* EmapthyAiToolbarView.swift */; };
-		9625EB855B94F2E7163A35CE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6374F65C4F73DBC6F5D0333D /* UIKit.framework */; };
-		9973EDB86908119E6B4F2192 /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 877B675937ADE35A1D10A96E /* KeyboardKit */; };
-		99DBD46F25E8DCDB78401EBF /* EmapthyAiAction.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6480C0F80C62D596721CC5AB /* EmapthyAiAction.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		9D7B26D48BA736D62116F3ED /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF4D0FE68977B15077E333C /* ReviewFlow.swift */; };
-		9DE02D8E6020E5F6A9AF3600 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */; };
-		A20B10145BE138B2866DD890 /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6226F7BA75E8057DAD7D51 /* RewriteResult.swift */; };
-		A21EA1B9407CD23181C7C923 /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FD7547FCEC5D13BF0CE9F7 /* Tokens.swift */; };
-		A8036D2733F9B5DF5DE1328D /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FD7547FCEC5D13BF0CE9F7 /* Tokens.swift */; };
-		A90F9DD347A8C54770D11E84 /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6226F7BA75E8057DAD7D51 /* RewriteResult.swift */; };
-		A9ED04DDAC8E416EF211D4DF /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B33186250A99E897942A1C /* EmapthyAiKeyboardApp.swift */; };
-		AB4BFF6B5350D0992500C324 /* EmapthyAiActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B11B3E97BE129E35567D4 /* EmapthyAiActionHandler.swift */; };
-		AE6B9712A6109BD0815CE20F /* EmapthyAiToolbarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BED464812DF6F3AE77E4AC /* EmapthyAiToolbarModel.swift */; };
-		B3264731F55DA8536A31E206 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC5B1415CCD56B353C8CD6E7 /* AppDelegate.swift */; };
-		B8BBEECA4639DB5F5C1D6B5B /* EmapthyAiCustomKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BCAAAA81A3E9122A9B5091 /* EmapthyAiCustomKeyboardView.swift */; };
-		BB3F6D5C6A8ED5B32435DFAB /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF5340B9FEEE4EC7E55B75A /* SettingsViewController.swift */; };
-		C3B505335027B97739D4ECDD /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4088F8A7092327BEA70C1D99 /* RewriteSettings.swift */; };
-		C46A3E40E47799115FBE246C /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B6226F7BA75E8057DAD7D51 /* RewriteResult.swift */; };
-		C4CA88F5CB026ED098682D88 /* EmapthyAiToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C19180B278CECF4035EEDA0 /* EmapthyAiToolbarView.swift */; };
-		C6CFF682D91DA00F0CCD7C9B /* ReviewCardScrollUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C71641EADA53F72CB275C5 /* ReviewCardScrollUITests.swift */; };
-		CA4FDEDCEAC1A202D3B0AD94 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */; };
-		CD113674B108985C7D89B1A7 /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF4D0FE68977B15077E333C /* ReviewFlow.swift */; };
-		CFA49BE047C429E93A6A7AA6 /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5B0BF83A1A1364CBC18E853D /* KeyboardKit */; };
-		CFDDCDC91E7B693131075C6E /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8414EFA3F2448C8B1D094E /* RewriteAPI.swift */; };
-		D6AFB35F9E74CFEA7EF8B864 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF8B752B2FF7EF4FA46D421B /* Foundation.framework */; };
-		D932EB475797BBCF56169D02 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6374F65C4F73DBC6F5D0333D /* UIKit.framework */; };
-		DC9E5B9120497C91E53F97F1 /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4088F8A7092327BEA70C1D99 /* RewriteSettings.swift */; };
-		DEADBD87CC1825B29892D8E1 /* ReviewCardHeightRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1A6B960A930460E032AEB9 /* ReviewCardHeightRegressionTests.swift */; };
-		DEE45D66BF01518885F2B4EB /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2FD7547FCEC5D13BF0CE9F7 /* Tokens.swift */; };
-		E34EA26C7B90C27096915954 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC58C385C6ED8BA4F7F26FDA /* KeyboardViewController.swift */; };
-		E4310346B2CE9405FDA354B7 /* KeyboardKitLicense.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55773388A2736CA064DE8977 /* KeyboardKitLicense.swift */; };
-		E839C95B1C434EB469A3E110 /* EmapthyAiActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B11B3E97BE129E35567D4 /* EmapthyAiActionHandler.swift */; };
-		E8BADED43B4EDDAFEE5F983D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1E8727267C94AB3127532869 /* Assets.xcassets */; };
-		EB29BC91B48831578D301F6D /* RealKeyboardAutocorrectUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F89C63FD6A8B3A9E4FB3DA1E /* RealKeyboardAutocorrectUITest.swift */; };
-		EEB645132A578A04339A7D96 /* RealKeyboardTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8B970980C572F96C1BB43C3 /* RealKeyboardTestSupport.swift */; };
-		EF1849B0DFA126F7A5489073 /* ToolbarRequestPromptSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF984C39F56433D2B9C2B7E /* ToolbarRequestPromptSnapshotTests.swift */; };
-		F09D0DDC848FFF8DD84CA65D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6374F65C4F73DBC6F5D0333D /* UIKit.framework */; };
-		F2D2AD10F92C88AFBBEDC03F /* EmapthyAiToolbarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BED464812DF6F3AE77E4AC /* EmapthyAiToolbarModel.swift */; };
-		F3B2F579B2BB6CDEFEFF83DF /* EmapthyAiActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B11B3E97BE129E35567D4 /* EmapthyAiActionHandler.swift */; };
-		F5A079D65F8B05BF2162E406 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38BEE815480A5AD9B995DA2 /* SceneDelegate.swift */; };
-		F7499C9809647C624551389E /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5751418AE79E19C89A9FDA52 /* ActionViewController.swift */; };
-		F8D0984884A27C2D316381F1 /* EmapthyAiToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C19180B278CECF4035EEDA0 /* EmapthyAiToolbarView.swift */; };
-		F9238E500A01AD04C3410FA9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */; };
+		0359FFD07F1941B5A19B9CC9 /* ReviewCardHeightRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 825AD47E430DE59A525E0B98 /* ReviewCardHeightRegressionTests.swift */; };
+		151DC042FC164833A00720D4 /* NativeKeyboardMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25CE2CD27100BA146992360 /* NativeKeyboardMetrics.swift */; };
+		167479762CDABD9D3E707D93 /* EmapthyAiActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE637367EE8EFDCC20C3E326 /* EmapthyAiActionHandler.swift */; };
+		1AF6EF68505893C06A53A343 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D40F78AD0EB5489F214255D7 /* UIKit.framework */; };
+		207F506FECA2579E962D7009 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB1C641E212807CE3D7FB52 /* Foundation.framework */; };
+		216A3BAA8444526A260F236B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F82016AACB57E2D35BB9243 /* Foundation.framework */; };
+		2772286986C72612AF939E84 /* EmapthyAiActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE637367EE8EFDCC20C3E326 /* EmapthyAiActionHandler.swift */; };
+		2DB8A83CB78ED8D569CEDB4C /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB6B38287EDDC51DDE269DA /* ReviewFlow.swift */; };
+		2FB4B0274547F1EA3D468B7E /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2324BC3A78F76FA87980B3B /* RewriteAPI.swift */; };
+		31C6764EC881D45A16F6CED4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE0920720AF8DC2C543F21F1 /* AppDelegate.swift */; };
+		321CCB4643DE1F5D6EEEF744 /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2324BC3A78F76FA87980B3B /* RewriteAPI.swift */; };
+		38454619ECB3DD328D2B7E2C /* RealKeyboardHeightGapUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF6BCF1ECF48C5237A3D00C /* RealKeyboardHeightGapUITest.swift */; };
+		3B3F0A8009F3EDA33A19F85A /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 00BEF1FE5B7B4E5C03035469 /* KeyboardKit */; };
+		3D4F9A346633ED7F12379C41 /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE934FC585B5479FABE807 /* RewriteSettings.swift */; };
+		3E3CA12ADA66AA192D66C2AE /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE934FC585B5479FABE807 /* RewriteSettings.swift */; };
+		3FA9FCDAB5D6B44DAE73F505 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E023A1EC7C8CD84911333C0 /* ActionViewController.swift */; };
+		40901D73531733B84F1658E3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651BC38E4CD970AE8298FD3F /* SceneDelegate.swift */; };
+		440CE66660975D0F7DE34B1C /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE934FC585B5479FABE807 /* RewriteSettings.swift */; };
+		4893389D75804B95E950BAC0 /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C05043CA959548D20A200 /* RewriteResult.swift */; };
+		4CA8476DCC69EA959AAC1D0F /* ReviewCardScrollUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E79A94D58F6962E0C70939B /* ReviewCardScrollUITests.swift */; };
+		4DA97423E3A5B88E0B239D97 /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB6B38287EDDC51DDE269DA /* ReviewFlow.swift */; };
+		518CCCAC89FA91E001B45484 /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA076A2E000CEF46E9FA7431 /* Tokens.swift */; };
+		54E2C449FFFE016C8AC1950F /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C05043CA959548D20A200 /* RewriteResult.swift */; };
+		5755B5DE2162DBEF3889AC31 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB1C641E212807CE3D7FB52 /* Foundation.framework */; };
+		5D7D96DE686B4CCCA5AB4071 /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865D29D5311BDE912F1E43D5 /* EmapthyAiKeyboardApp.swift */; };
+		5F46BFC7F4B9F6255D814A59 /* EmapthyAiToolbarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE11D1D22D24064CE8F3C02 /* EmapthyAiToolbarModel.swift */; };
+		612B508D0EB2EB5B481BDCB1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D40F78AD0EB5489F214255D7 /* UIKit.framework */; };
+		616780147FC62D94DF1BAA7B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D40F78AD0EB5489F214255D7 /* UIKit.framework */; };
+		69388B1A262D759376F114E7 /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C05043CA959548D20A200 /* RewriteResult.swift */; };
+		717CA26CD8A334176F9AADDA /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA076A2E000CEF46E9FA7431 /* Tokens.swift */; };
+		73572138045C5F21AFA9439A /* EmapthyAiCustomKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40F1D895C1F3E3830CFC1A /* EmapthyAiCustomKeyboardView.swift */; };
+		762373B810FC97DC204411A3 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56F9404E2BA21D47BEF1AFD /* KeyboardViewController.swift */; };
+		78161592B3F35FE97DF21E67 /* ToolbarRequestPromptSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C27ED0B2FC12DBCABA4D14 /* ToolbarRequestPromptSnapshotTests.swift */; };
+		7C2DD260FF4BB6EF6E69DE20 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D40F78AD0EB5489F214255D7 /* UIKit.framework */; };
+		803938352A1E9AFB3E30B7C4 /* EmapthyAiToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 393FBE812F9446084522AB30 /* EmapthyAiToolbarView.swift */; };
+		8CA6F407D541E3D3DA187B1C /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA076A2E000CEF46E9FA7431 /* Tokens.swift */; };
+		8D9F3DE81F0B927F1E705CA3 /* EmapthyAiToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 393FBE812F9446084522AB30 /* EmapthyAiToolbarView.swift */; };
+		9349EDB7088240AD891A7039 /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2324BC3A78F76FA87980B3B /* RewriteAPI.swift */; };
+		9A5ADB21EEB7E07148659AC9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F82016AACB57E2D35BB9243 /* Foundation.framework */; };
+		9C2219481EE52D6DF8C831D7 /* EmapthyAiActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE637367EE8EFDCC20C3E326 /* EmapthyAiActionHandler.swift */; };
+		9E0D342F894B4EE4AAAE9A4C /* NativeKeyboardMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25CE2CD27100BA146992360 /* NativeKeyboardMetrics.swift */; };
+		9F17D25A77C6B7C2D509E663 /* Tokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA076A2E000CEF46E9FA7431 /* Tokens.swift */; };
+		A0A89DCD1C11E6D12E0531D4 /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9CDA5AD466D4031AD231E65C /* KeyboardKit */; };
+		A0F3791949A1D5A0EBCF0585 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6952554365E1424BA50A047 /* SettingsViewController.swift */; };
+		A32EEB5568CDB4A67B5404C8 /* EmapthyAiToolbarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE11D1D22D24064CE8F3C02 /* EmapthyAiToolbarModel.swift */; };
+		A4F1BC8F7A7A9E1A633E5105 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56F9404E2BA21D47BEF1AFD /* KeyboardViewController.swift */; };
+		A91431860BDA24C6C652B6A6 /* ReviewCardUITestHostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB8405C9D81E5F274C84995A /* ReviewCardUITestHostViewController.swift */; };
+		AB16C417A446B768D1628C09 /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9975FFAF754B80129DB9699E /* KeyboardKit */; };
+		ABB1681C27F4111D6B180433 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F82016AACB57E2D35BB9243 /* Foundation.framework */; };
+		AEA3AEF02EFFCB264D907786 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6846433436F61849D030A3 /* Assets.xcassets */; };
+		B0DAC0F5CDFBB3F41BD5B123 /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB6B38287EDDC51DDE269DA /* ReviewFlow.swift */; };
+		B8A39B206DF74346E6D40D9F /* NativeKeyboardMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25CE2CD27100BA146992360 /* NativeKeyboardMetrics.swift */; };
+		C0F5D58D55DBC86DD331402E /* EmapthyAiToolbarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE11D1D22D24064CE8F3C02 /* EmapthyAiToolbarModel.swift */; };
+		C1425D77EBDA50366AB03457 /* EmapthyAiToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 393FBE812F9446084522AB30 /* EmapthyAiToolbarView.swift */; };
+		C1C694032B0158334C1A0D5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB1C641E212807CE3D7FB52 /* Foundation.framework */; };
+		C22AE6F9475368CEC21A0CEE /* EmapthyAiCustomKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40F1D895C1F3E3830CFC1A /* EmapthyAiCustomKeyboardView.swift */; };
+		C27E9FDD5F111411CE48F97D /* RealKeyboardIdleClipUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 384FE68AB81CF57046AD47F0 /* RealKeyboardIdleClipUITest.swift */; };
+		C519537217450EB7BB6F5455 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F20D5AE90C03545CA5F7D124 /* UniformTypeIdentifiers.framework */; };
+		C625EAD81A0E5296959F0D9E /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E426CBB993D0ADF20BBA0AC1 /* XCTest.framework */; };
+		C881B2C1664177123058A097 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F82016AACB57E2D35BB9243 /* Foundation.framework */; };
+		CB89547AF18F6CAA57FE73FC /* RealKeyboardAutocorrectUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0BB169D2C2B31207C3C70 /* RealKeyboardAutocorrectUITest.swift */; };
+		CFFB59225C217B792FF22B3F /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56F9404E2BA21D47BEF1AFD /* KeyboardViewController.swift */; };
+		D068447797F29E9383693FBE /* RewriteSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CDE934FC585B5479FABE807 /* RewriteSettings.swift */; };
+		D11BD4B6F3B997E6FD90B350 /* NativeKeyboardMeasurementUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD5A32FF12E568B2DF62243 /* NativeKeyboardMeasurementUITest.swift */; };
+		D421BC0D20F8FC114509A6EB /* EmapthyAiKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2E767849F9377D700DEE6E3B /* EmapthyAiKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D5530146A899DDF6910A41AC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB1C641E212807CE3D7FB52 /* Foundation.framework */; };
+		D98E3965C9659350627B6076 /* RewriteAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2324BC3A78F76FA87980B3B /* RewriteAPI.swift */; };
+		DA2A0317740762B949070825 /* EmapthyAiAction.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8FB8F3A47C5315557C70BD4C /* EmapthyAiAction.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DA91E7C2446147475B1BF5C2 /* KeyboardLayoutSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ED3BAC9692B965C569D8D3 /* KeyboardLayoutSnapshotTests.swift */; };
+		DE55AB2C5E5744905388FEF6 /* RealKeyboardTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B85EFF1353088227F2B6E7 /* RealKeyboardTestSupport.swift */; };
+		E6238AF355075D146D9E4A83 /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865D29D5311BDE912F1E43D5 /* EmapthyAiKeyboardApp.swift */; };
+		E6DE7301A88FFCDBABF7E85B /* ToolbarPersonaModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57D6DF2519C7393ECD7D997 /* ToolbarPersonaModelTests.swift */; };
+		EC88831AC69162741C0A6FF1 /* RewriteResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C05043CA959548D20A200 /* RewriteResult.swift */; };
+		EDA8A593074439D827067CBE /* ReviewFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB6B38287EDDC51DDE269DA /* ReviewFlow.swift */; };
+		F0ED2636FD08B3525743433D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAB1C641E212807CE3D7FB52 /* Foundation.framework */; };
+		F7124A95D03591A71C49F6CC /* EmapthyAiKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865D29D5311BDE912F1E43D5 /* EmapthyAiKeyboardApp.swift */; };
+		FA140D9A923F0BC9EB23920A /* EmapthyAiCustomKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA40F1D895C1F3E3830CFC1A /* EmapthyAiCustomKeyboardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		20B15DEF661DAC0F1ADDF8C0 /* PBXContainerItemProxy */ = {
+		0FFFF688F1B960713A109CF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7D92DC85D34ADCC4A312F3B2 /* Project object */;
+			containerPortal = 8C7D905802BBAE3343783E8D /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = CD31BBEA13E7E3A5CFDF4D73;
-			remoteInfo = EmapthyAiAction;
+			remoteGlobalIDString = 5CE39B0FE6EE34F0DF41D505;
+			remoteInfo = EmapthyAi;
 		};
-		4834163F441351355E1B874F /* PBXContainerItemProxy */ = {
+		50FF789813694B3378C25191 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7D92DC85D34ADCC4A312F3B2 /* Project object */;
+			containerPortal = 8C7D905802BBAE3343783E8D /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0B6497558011405208012437;
+			remoteGlobalIDString = 9BA97DEEC54C5EE741A96E21;
 			remoteInfo = EmapthyAiKeyboard;
 		};
-		CED0959C9BA31CBAE506287F /* PBXContainerItemProxy */ = {
+		78541D1F617CE5C58ECEA5D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7D92DC85D34ADCC4A312F3B2 /* Project object */;
+			containerPortal = 8C7D905802BBAE3343783E8D /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = C7266294CC95DD8F426319EF;
-			remoteInfo = EmapthyAi;
+			remoteGlobalIDString = FB2DE6A9E50288E1A971F119;
+			remoteInfo = EmapthyAiAction;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		751342BDF94FEF8DC098A612 /* Embed Foundation Extensions */ = {
+		F1047AA258BF2A5AD7295251 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				6804BF773593048E7EC35B5A /* EmapthyAiKeyboard.appex in Embed Foundation Extensions */,
-				99DBD46F25E8DCDB78401EBF /* EmapthyAiAction.appex in Embed Foundation Extensions */,
+				D421BC0D20F8FC114509A6EB /* EmapthyAiKeyboard.appex in Embed Foundation Extensions */,
+				DA2A0317740762B949070825 /* EmapthyAiAction.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -133,251 +126,308 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		00B33186250A99E897942A1C /* EmapthyAiKeyboardApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiKeyboardApp.swift; sourceTree = "<group>"; };
-		0C9CA93E2C0D9917C5B1A34E /* KeyboardLayoutSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutSnapshotTests.swift; sourceTree = "<group>"; };
-		1B044EEA68860F0623621EC6 /* EmapthyAi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmapthyAi.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E8727267C94AB3127532869 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1F7D7C0EDAB2888A69419446 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2E5AB6A5275B6D08A5194BF6 /* ToolbarPersonaModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToolbarPersonaModelTests.swift; sourceTree = "<group>"; };
-		2FC46AEEDD6EFA3DA4A61659 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3542F5B895AE754D01CF45FC /* EmapthyAiLayoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmapthyAiLayoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D273047D2CD3ED4B98AAA0A /* RealKeyboardIdleClipUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardIdleClipUITest.swift; sourceTree = "<group>"; };
-		3FF4D0FE68977B15077E333C /* ReviewFlow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewFlow.swift; sourceTree = "<group>"; };
-		4088F8A7092327BEA70C1D99 /* RewriteSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewriteSettings.swift; sourceTree = "<group>"; };
-		55773388A2736CA064DE8977 /* KeyboardKitLicense.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardKitLicense.swift; sourceTree = "<group>"; };
-		5751418AE79E19C89A9FDA52 /* ActionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
-		5C8414EFA3F2448C8B1D094E /* RewriteAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewriteAPI.swift; sourceTree = "<group>"; };
-		6374F65C4F73DBC6F5D0333D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		642956099B10E49E0C428C71 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6480C0F80C62D596721CC5AB /* EmapthyAiAction.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EmapthyAiAction.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		690B3D97885EC306A8E36C27 /* NativeKeyboardMeasurementUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NativeKeyboardMeasurementUITest.swift; sourceTree = "<group>"; };
-		6C19180B278CECF4035EEDA0 /* EmapthyAiToolbarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiToolbarView.swift; sourceTree = "<group>"; };
-		70B395B9E99A67B3213384F4 /* RealKeyboardHeightGapUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardHeightGapUITest.swift; sourceTree = "<group>"; };
-		75765143EF75942A80990F68 /* EmapthyAiAction.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = EmapthyAiAction.entitlements; sourceTree = "<group>"; };
-		890CD8646AFF427B21C6FC11 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
-		93ACCB54589EC6E4A50DC3F5 /* EmapthyAiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmapthyAiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		968018EC09C0B00AB01DF66B /* NativeKeyboardMetrics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NativeKeyboardMetrics.swift; sourceTree = "<group>"; };
-		99D32CF1E573AAA48E49425E /* EmapthyAi.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = EmapthyAi.entitlements; sourceTree = "<group>"; };
-		9B6226F7BA75E8057DAD7D51 /* RewriteResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewriteResult.swift; sourceTree = "<group>"; };
-		9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		9F8AB371166F26EAD4CB89B7 /* EmapthyAiKeyboard.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = EmapthyAiKeyboard.entitlements; sourceTree = "<group>"; };
-		A2FD7547FCEC5D13BF0CE9F7 /* Tokens.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
-		A7BED464812DF6F3AE77E4AC /* EmapthyAiToolbarModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiToolbarModel.swift; sourceTree = "<group>"; };
-		AD9B3A2F04DD4214679EC02C /* EmapthyAiKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EmapthyAiKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		BA0CEE6AA9A742F9FAD697F6 /* ReviewCardUITestHostViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCardUITestHostViewController.swift; sourceTree = "<group>"; };
-		BDF5340B9FEEE4EC7E55B75A /* SettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		CAF984C39F56433D2B9C2B7E /* ToolbarRequestPromptSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToolbarRequestPromptSnapshotTests.swift; sourceTree = "<group>"; };
-		CE1A6B960A930460E032AEB9 /* ReviewCardHeightRegressionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCardHeightRegressionTests.swift; sourceTree = "<group>"; };
-		D38BEE815480A5AD9B995DA2 /* SceneDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		D44B11B3E97BE129E35567D4 /* EmapthyAiActionHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiActionHandler.swift; sourceTree = "<group>"; };
-		D9BCAAAA81A3E9122A9B5091 /* EmapthyAiCustomKeyboardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiCustomKeyboardView.swift; sourceTree = "<group>"; };
-		E5ADBBE184578BD0A08B0554 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
-		E8B970980C572F96C1BB43C3 /* RealKeyboardTestSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardTestSupport.swift; sourceTree = "<group>"; };
-		EC58C385C6ED8BA4F7F26FDA /* KeyboardViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
-		EC5B1415CCD56B353C8CD6E7 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		EF8B752B2FF7EF4FA46D421B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F5C71641EADA53F72CB275C5 /* ReviewCardScrollUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCardScrollUITests.swift; sourceTree = "<group>"; };
-		F89C63FD6A8B3A9E4FB3DA1E /* RealKeyboardAutocorrectUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardAutocorrectUITest.swift; sourceTree = "<group>"; };
+		07C27ED0B2FC12DBCABA4D14 /* ToolbarRequestPromptSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToolbarRequestPromptSnapshotTests.swift; sourceTree = "<group>"; };
+		0C7440AD96AC23E5BF336F04 /* EmapthyAi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EmapthyAi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E79A94D58F6962E0C70939B /* ReviewCardScrollUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCardScrollUITests.swift; sourceTree = "<group>"; };
+		20B85EFF1353088227F2B6E7 /* RealKeyboardTestSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardTestSupport.swift; sourceTree = "<group>"; };
+		2A73FA2FD72F4C65B5003848 /* EmapthyAiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmapthyAiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CDE934FC585B5479FABE807 /* RewriteSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewriteSettings.swift; sourceTree = "<group>"; };
+		2E767849F9377D700DEE6E3B /* EmapthyAiKeyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EmapthyAiKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3101B5B0758DAA6F8D10FBDE /* EmapthyAiKeyboard.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = EmapthyAiKeyboard.entitlements; sourceTree = "<group>"; };
+		384FE68AB81CF57046AD47F0 /* RealKeyboardIdleClipUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardIdleClipUITest.swift; sourceTree = "<group>"; };
+		393FBE812F9446084522AB30 /* EmapthyAiToolbarView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiToolbarView.swift; sourceTree = "<group>"; };
+		3F82016AACB57E2D35BB9243 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		4FDFEF061DC0F487429674A5 /* EmapthyAi.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = EmapthyAi.entitlements; sourceTree = "<group>"; };
+		51275457581C70A04B648232 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5DD5A32FF12E568B2DF62243 /* NativeKeyboardMeasurementUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NativeKeyboardMeasurementUITest.swift; sourceTree = "<group>"; };
+		5E023A1EC7C8CD84911333C0 /* ActionViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
+		651BC38E4CD970AE8298FD3F /* SceneDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		6D341A05925C934851F9532A /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6EF6BCF1ECF48C5237A3D00C /* RealKeyboardHeightGapUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardHeightGapUITest.swift; sourceTree = "<group>"; };
+		825AD47E430DE59A525E0B98 /* ReviewCardHeightRegressionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCardHeightRegressionTests.swift; sourceTree = "<group>"; };
+		865D29D5311BDE912F1E43D5 /* EmapthyAiKeyboardApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiKeyboardApp.swift; sourceTree = "<group>"; };
+		8A6846433436F61849D030A3 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8FB8F3A47C5315557C70BD4C /* EmapthyAiAction.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EmapthyAiAction.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		97FDBC7C92B4AE3593DB251C /* EmapthyAiAction.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = EmapthyAiAction.entitlements; sourceTree = "<group>"; };
+		A2324BC3A78F76FA87980B3B /* RewriteAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewriteAPI.swift; sourceTree = "<group>"; };
+		A6952554365E1424BA50A047 /* SettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		AAB1C641E212807CE3D7FB52 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		AB8405C9D81E5F274C84995A /* ReviewCardUITestHostViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewCardUITestHostViewController.swift; sourceTree = "<group>"; };
+		ADE11D1D22D24064CE8F3C02 /* EmapthyAiToolbarModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiToolbarModel.swift; sourceTree = "<group>"; };
+		AE0920720AF8DC2C543F21F1 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BE637367EE8EFDCC20C3E326 /* EmapthyAiActionHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiActionHandler.swift; sourceTree = "<group>"; };
+		C1A0BB169D2C2B31207C3C70 /* RealKeyboardAutocorrectUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RealKeyboardAutocorrectUITest.swift; sourceTree = "<group>"; };
+		C5C8EF1EC887B825D271259C /* EmapthyAiLayoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmapthyAiLayoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB3FF087D7D752641597D328 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D25CE2CD27100BA146992360 /* NativeKeyboardMetrics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NativeKeyboardMetrics.swift; sourceTree = "<group>"; };
+		D40F78AD0EB5489F214255D7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		D56F9404E2BA21D47BEF1AFD /* KeyboardViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
+		D8ED3BAC9692B965C569D8D3 /* KeyboardLayoutSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutSnapshotTests.swift; sourceTree = "<group>"; };
+		D92C05043CA959548D20A200 /* RewriteResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RewriteResult.swift; sourceTree = "<group>"; };
+		DA076A2E000CEF46E9FA7431 /* Tokens.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Tokens.swift; sourceTree = "<group>"; };
+		E426CBB993D0ADF20BBA0AC1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		F20D5AE90C03545CA5F7D124 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
+		F57D6DF2519C7393ECD7D997 /* ToolbarPersonaModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ToolbarPersonaModelTests.swift; sourceTree = "<group>"; };
+		FA40F1D895C1F3E3830CFC1A /* EmapthyAiCustomKeyboardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmapthyAiCustomKeyboardView.swift; sourceTree = "<group>"; };
+		FCB6B38287EDDC51DDE269DA /* ReviewFlow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewFlow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		62E93E0BC1531BAD7452C44E /* Frameworks */ = {
+		1975D29B2E6A4A49617B845C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA4FDEDCEAC1A202D3B0AD94 /* Foundation.framework in Frameworks */,
-				05E7674D6A92A79CC9BFF5E7 /* UIKit.framework in Frameworks */,
-				8094403C8DA62622EB148EE6 /* Foundation.framework in Frameworks */,
-				11727BD289FFDBF7DFBAFEC9 /* UniformTypeIdentifiers.framework in Frameworks */,
+				5755B5DE2162DBEF3889AC31 /* Foundation.framework in Frameworks */,
+				1AF6EF68505893C06A53A343 /* UIKit.framework in Frameworks */,
+				C881B2C1664177123058A097 /* Foundation.framework in Frameworks */,
+				AB16C417A446B768D1628C09 /* KeyboardKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AD00EF99A8CCE1341BAC6B10 /* Frameworks */ = {
+		4AC37174F3D340C1DFB7902F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D6E6417A8FA30BF3E6A0FEE /* Foundation.framework in Frameworks */,
-				F09D0DDC848FFF8DD84CA65D /* UIKit.framework in Frameworks */,
-				45FA1AF3C84D9A6DAB8A0B9E /* Foundation.framework in Frameworks */,
-				CFA49BE047C429E93A6A7AA6 /* KeyboardKit in Frameworks */,
+				C1C694032B0158334C1A0D5E /* Foundation.framework in Frameworks */,
+				612B508D0EB2EB5B481BDCB1 /* UIKit.framework in Frameworks */,
+				9A5ADB21EEB7E07148659AC9 /* Foundation.framework in Frameworks */,
+				C519537217450EB7BB6F5455 /* UniformTypeIdentifiers.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C7C8000187994B301407C0AC /* Frameworks */ = {
+		9823634B2390DF463C5B709E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9DE02D8E6020E5F6A9AF3600 /* Foundation.framework in Frameworks */,
-				9625EB855B94F2E7163A35CE /* UIKit.framework in Frameworks */,
-				D6AFB35F9E74CFEA7EF8B864 /* Foundation.framework in Frameworks */,
-				9973EDB86908119E6B4F2192 /* KeyboardKit in Frameworks */,
-				6CB5B2DB01E6FCB74C532F89 /* KeyboardKitPro in Frameworks */,
+				207F506FECA2579E962D7009 /* Foundation.framework in Frameworks */,
+				7C2DD260FF4BB6EF6E69DE20 /* UIKit.framework in Frameworks */,
+				ABB1681C27F4111D6B180433 /* Foundation.framework in Frameworks */,
+				A0A89DCD1C11E6D12E0531D4 /* KeyboardKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CBBE6F52A1578DB8DB9F8611 /* Frameworks */ = {
+		B2BD1878E7AA47F0AC7A8F4A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F9238E500A01AD04C3410FA9 /* Foundation.framework in Frameworks */,
-				7D4F803EAD466FE4435D5146 /* XCTest.framework in Frameworks */,
+				F0ED2636FD08B3525743433D /* Foundation.framework in Frameworks */,
+				616780147FC62D94DF1BAA7B /* UIKit.framework in Frameworks */,
+				216A3BAA8444526A260F236B /* Foundation.framework in Frameworks */,
+				3B3F0A8009F3EDA33A19F85A /* KeyboardKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DF9787C8750A357C474B724F /* Frameworks */ = {
+		B6BBA06A101549EECE29B543 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B0E25C11A89353C3961C936 /* Foundation.framework in Frameworks */,
-				D932EB475797BBCF56169D02 /* UIKit.framework in Frameworks */,
-				1BD5B5172EE8F835B5C2989E /* Foundation.framework in Frameworks */,
-				069E1997394739F59938A09A /* KeyboardKit in Frameworks */,
-				2AC095AAA4028E9C1682E5A7 /* KeyboardKitPro in Frameworks */,
+				D5530146A899DDF6910A41AC /* Foundation.framework in Frameworks */,
+				C625EAD81A0E5296959F0D9E /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		32BA77ACC0B67D391BFCB2BA = {
+		059D7178C7533BCA0CC400BE /* EmapthyAiAction */ = {
 			isa = PBXGroup;
 			children = (
-				BFCFF9A127B443BB53B7C049 /* Products */,
-				60D1C5766992CE9EF67678DA /* Frameworks */,
-				A5D828D83485F7B91418CFD1 /* Shared */,
-				E182A7B57EF50DF8F4DF5636 /* EmapthyAi */,
-				37BC066CFFEEBC511E39183E /* EmapthyAiKeyboard */,
-				84A00A21D15BBDAD89B07B64 /* EmapthyAiAction */,
-				D13938CD821588E7AFE2EB50 /* EmapthyAiLayoutTests */,
-				F7B0A69F974D5FA15B8D2665 /* EmapthyAiUITests */,
-			);
-			sourceTree = "<group>";
-		};
-		37BC066CFFEEBC511E39183E /* EmapthyAiKeyboard */ = {
-			isa = PBXGroup;
-			children = (
-				EC58C385C6ED8BA4F7F26FDA /* KeyboardViewController.swift */,
-				968018EC09C0B00AB01DF66B /* NativeKeyboardMetrics.swift */,
-				D44B11B3E97BE129E35567D4 /* EmapthyAiActionHandler.swift */,
-				D9BCAAAA81A3E9122A9B5091 /* EmapthyAiCustomKeyboardView.swift */,
-				A7BED464812DF6F3AE77E4AC /* EmapthyAiToolbarModel.swift */,
-				6C19180B278CECF4035EEDA0 /* EmapthyAiToolbarView.swift */,
-				642956099B10E49E0C428C71 /* Info.plist */,
-				9F8AB371166F26EAD4CB89B7 /* EmapthyAiKeyboard.entitlements */,
-			);
-			name = EmapthyAiKeyboard;
-			path = EmapthyAiKeyboard;
-			sourceTree = "<group>";
-		};
-		60D1C5766992CE9EF67678DA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				AFF0DCDF274156C444A3081E /* iOS */,
-				6374F65C4F73DBC6F5D0333D /* UIKit.framework */,
-				EF8B752B2FF7EF4FA46D421B /* Foundation.framework */,
-				890CD8646AFF427B21C6FC11 /* UniformTypeIdentifiers.framework */,
-				E5ADBBE184578BD0A08B0554 /* XCTest.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		84A00A21D15BBDAD89B07B64 /* EmapthyAiAction */ = {
-			isa = PBXGroup;
-			children = (
-				5751418AE79E19C89A9FDA52 /* ActionViewController.swift */,
-				1F7D7C0EDAB2888A69419446 /* Info.plist */,
-				75765143EF75942A80990F68 /* EmapthyAiAction.entitlements */,
+				5E023A1EC7C8CD84911333C0 /* ActionViewController.swift */,
+				6D341A05925C934851F9532A /* Info.plist */,
+				97FDBC7C92B4AE3593DB251C /* EmapthyAiAction.entitlements */,
 			);
 			name = EmapthyAiAction;
 			path = EmapthyAiAction;
 			sourceTree = "<group>";
 		};
-		A5D828D83485F7B91418CFD1 /* Shared */ = {
+		0904A157C8168704CFE59647 /* EmapthyAi */ = {
 			isa = PBXGroup;
 			children = (
-				55773388A2736CA064DE8977 /* KeyboardKitLicense.swift */,
-				00B33186250A99E897942A1C /* EmapthyAiKeyboardApp.swift */,
-				3FF4D0FE68977B15077E333C /* ReviewFlow.swift */,
-				5C8414EFA3F2448C8B1D094E /* RewriteAPI.swift */,
-				9B6226F7BA75E8057DAD7D51 /* RewriteResult.swift */,
-				4088F8A7092327BEA70C1D99 /* RewriteSettings.swift */,
-				A2FD7547FCEC5D13BF0CE9F7 /* Tokens.swift */,
-			);
-			name = Shared;
-			path = Shared;
-			sourceTree = "<group>";
-		};
-		AFF0DCDF274156C444A3081E /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				9EBE0AE0DC126D8FAC7365C7 /* Foundation.framework */,
-			);
-			name = iOS;
-			sourceTree = "<group>";
-		};
-		BFCFF9A127B443BB53B7C049 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				1B044EEA68860F0623621EC6 /* EmapthyAi.app */,
-				AD9B3A2F04DD4214679EC02C /* EmapthyAiKeyboard.appex */,
-				6480C0F80C62D596721CC5AB /* EmapthyAiAction.appex */,
-				3542F5B895AE754D01CF45FC /* EmapthyAiLayoutTests.xctest */,
-				93ACCB54589EC6E4A50DC3F5 /* EmapthyAiUITests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		D13938CD821588E7AFE2EB50 /* EmapthyAiLayoutTests */ = {
-			isa = PBXGroup;
-			children = (
-				0C9CA93E2C0D9917C5B1A34E /* KeyboardLayoutSnapshotTests.swift */,
-				CE1A6B960A930460E032AEB9 /* ReviewCardHeightRegressionTests.swift */,
-				2E5AB6A5275B6D08A5194BF6 /* ToolbarPersonaModelTests.swift */,
-				CAF984C39F56433D2B9C2B7E /* ToolbarRequestPromptSnapshotTests.swift */,
-			);
-			name = EmapthyAiLayoutTests;
-			path = EmapthyAiLayoutTests;
-			sourceTree = "<group>";
-		};
-		E182A7B57EF50DF8F4DF5636 /* EmapthyAi */ = {
-			isa = PBXGroup;
-			children = (
-				EC5B1415CCD56B353C8CD6E7 /* AppDelegate.swift */,
-				BA0CEE6AA9A742F9FAD697F6 /* ReviewCardUITestHostViewController.swift */,
-				D38BEE815480A5AD9B995DA2 /* SceneDelegate.swift */,
-				BDF5340B9FEEE4EC7E55B75A /* SettingsViewController.swift */,
-				2FC46AEEDD6EFA3DA4A61659 /* Info.plist */,
-				99D32CF1E573AAA48E49425E /* EmapthyAi.entitlements */,
-				1E8727267C94AB3127532869 /* Assets.xcassets */,
+				AE0920720AF8DC2C543F21F1 /* AppDelegate.swift */,
+				AB8405C9D81E5F274C84995A /* ReviewCardUITestHostViewController.swift */,
+				651BC38E4CD970AE8298FD3F /* SceneDelegate.swift */,
+				A6952554365E1424BA50A047 /* SettingsViewController.swift */,
+				CB3FF087D7D752641597D328 /* Info.plist */,
+				4FDFEF061DC0F487429674A5 /* EmapthyAi.entitlements */,
+				8A6846433436F61849D030A3 /* Assets.xcassets */,
 			);
 			name = EmapthyAi;
 			path = EmapthyAi;
 			sourceTree = "<group>";
 		};
-		F7B0A69F974D5FA15B8D2665 /* EmapthyAiUITests */ = {
+		4658CFFCFB0975BD4AAFB862 /* EmapthyAiLayoutTests */ = {
 			isa = PBXGroup;
 			children = (
-				690B3D97885EC306A8E36C27 /* NativeKeyboardMeasurementUITest.swift */,
-				F89C63FD6A8B3A9E4FB3DA1E /* RealKeyboardAutocorrectUITest.swift */,
-				70B395B9E99A67B3213384F4 /* RealKeyboardHeightGapUITest.swift */,
-				3D273047D2CD3ED4B98AAA0A /* RealKeyboardIdleClipUITest.swift */,
-				E8B970980C572F96C1BB43C3 /* RealKeyboardTestSupport.swift */,
-				F5C71641EADA53F72CB275C5 /* ReviewCardScrollUITests.swift */,
+				D8ED3BAC9692B965C569D8D3 /* KeyboardLayoutSnapshotTests.swift */,
+				825AD47E430DE59A525E0B98 /* ReviewCardHeightRegressionTests.swift */,
+				F57D6DF2519C7393ECD7D997 /* ToolbarPersonaModelTests.swift */,
+				07C27ED0B2FC12DBCABA4D14 /* ToolbarRequestPromptSnapshotTests.swift */,
+			);
+			name = EmapthyAiLayoutTests;
+			path = EmapthyAiLayoutTests;
+			sourceTree = "<group>";
+		};
+		4A57E6084E84FF53F338F13D /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				AAB1C641E212807CE3D7FB52 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		4FABC6A23459C7CD158706D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4A57E6084E84FF53F338F13D /* iOS */,
+				D40F78AD0EB5489F214255D7 /* UIKit.framework */,
+				3F82016AACB57E2D35BB9243 /* Foundation.framework */,
+				F20D5AE90C03545CA5F7D124 /* UniformTypeIdentifiers.framework */,
+				E426CBB993D0ADF20BBA0AC1 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		842422F2FBF0BE0968166223 /* EmapthyAiKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				BE637367EE8EFDCC20C3E326 /* EmapthyAiActionHandler.swift */,
+				FA40F1D895C1F3E3830CFC1A /* EmapthyAiCustomKeyboardView.swift */,
+				ADE11D1D22D24064CE8F3C02 /* EmapthyAiToolbarModel.swift */,
+				393FBE812F9446084522AB30 /* EmapthyAiToolbarView.swift */,
+				D56F9404E2BA21D47BEF1AFD /* KeyboardViewController.swift */,
+				D25CE2CD27100BA146992360 /* NativeKeyboardMetrics.swift */,
+				51275457581C70A04B648232 /* Info.plist */,
+				3101B5B0758DAA6F8D10FBDE /* EmapthyAiKeyboard.entitlements */,
+			);
+			name = EmapthyAiKeyboard;
+			path = EmapthyAiKeyboard;
+			sourceTree = "<group>";
+		};
+		909B857137C20D7561F14E62 /* EmapthyAiUITests */ = {
+			isa = PBXGroup;
+			children = (
+				5DD5A32FF12E568B2DF62243 /* NativeKeyboardMeasurementUITest.swift */,
+				C1A0BB169D2C2B31207C3C70 /* RealKeyboardAutocorrectUITest.swift */,
+				6EF6BCF1ECF48C5237A3D00C /* RealKeyboardHeightGapUITest.swift */,
+				384FE68AB81CF57046AD47F0 /* RealKeyboardIdleClipUITest.swift */,
+				20B85EFF1353088227F2B6E7 /* RealKeyboardTestSupport.swift */,
+				0E79A94D58F6962E0C70939B /* ReviewCardScrollUITests.swift */,
 			);
 			name = EmapthyAiUITests;
 			path = EmapthyAiUITests;
 			sourceTree = "<group>";
 		};
+		A889C2C1A333AB5F1FCC4546 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0C7440AD96AC23E5BF336F04 /* EmapthyAi.app */,
+				2E767849F9377D700DEE6E3B /* EmapthyAiKeyboard.appex */,
+				8FB8F3A47C5315557C70BD4C /* EmapthyAiAction.appex */,
+				C5C8EF1EC887B825D271259C /* EmapthyAiLayoutTests.xctest */,
+				2A73FA2FD72F4C65B5003848 /* EmapthyAiUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C83168DC29CE904A50BC476F = {
+			isa = PBXGroup;
+			children = (
+				A889C2C1A333AB5F1FCC4546 /* Products */,
+				4FABC6A23459C7CD158706D5 /* Frameworks */,
+				E0D2A67A543FD74125B14A9C /* Shared */,
+				0904A157C8168704CFE59647 /* EmapthyAi */,
+				842422F2FBF0BE0968166223 /* EmapthyAiKeyboard */,
+				059D7178C7533BCA0CC400BE /* EmapthyAiAction */,
+				4658CFFCFB0975BD4AAFB862 /* EmapthyAiLayoutTests */,
+				909B857137C20D7561F14E62 /* EmapthyAiUITests */,
+			);
+			sourceTree = "<group>";
+		};
+		E0D2A67A543FD74125B14A9C /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				865D29D5311BDE912F1E43D5 /* EmapthyAiKeyboardApp.swift */,
+				FCB6B38287EDDC51DDE269DA /* ReviewFlow.swift */,
+				A2324BC3A78F76FA87980B3B /* RewriteAPI.swift */,
+				D92C05043CA959548D20A200 /* RewriteResult.swift */,
+				2CDE934FC585B5479FABE807 /* RewriteSettings.swift */,
+				DA076A2E000CEF46E9FA7431 /* Tokens.swift */,
+			);
+			name = Shared;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0B6497558011405208012437 /* EmapthyAiKeyboard */ = {
+		3C26A2F42A7C2B36C9A124F0 /* EmapthyAiUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D461450424B1D425BD75B10F /* Build configuration list for PBXNativeTarget "EmapthyAiKeyboard" */;
+			buildConfigurationList = 34D17113B831C961CCF1F232 /* Build configuration list for PBXNativeTarget "EmapthyAiUITests" */;
 			buildPhases = (
-				43123776659FD75E648C9D92 /* Sources */,
-				AD00EF99A8CCE1341BAC6B10 /* Frameworks */,
-				3772A1C34EB63C49057A4DF8 /* Resources */,
+				89643CB4BF4A674735473144 /* Sources */,
+				B6BBA06A101549EECE29B543 /* Frameworks */,
+				B81F13F904E8BA4991869CED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F68472074DBA3636C4BCE644 /* PBXTargetDependency */,
+			);
+			name = EmapthyAiUITests;
+			productName = EmapthyAiUITests;
+			productReference = 2A73FA2FD72F4C65B5003848 /* EmapthyAiUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		5CE39B0FE6EE34F0DF41D505 /* EmapthyAi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C96E570C97A23496E6386C2 /* Build configuration list for PBXNativeTarget "EmapthyAi" */;
+			buildPhases = (
+				1022D219EA7299CC56A20172 /* Sources */,
+				9823634B2390DF463C5B709E /* Frameworks */,
+				C7F75AE6D45127765392522A /* Resources */,
+				F1047AA258BF2A5AD7295251 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3464EBAE2E4BB2A84134B238 /* PBXTargetDependency */,
+				8B6023F807FC2BEE4CDD6AF2 /* PBXTargetDependency */,
+			);
+			name = EmapthyAi;
+			packageProductDependencies = (
+				9CDA5AD466D4031AD231E65C /* KeyboardKit */,
+			);
+			productName = EmapthyAi;
+			productReference = 0C7440AD96AC23E5BF336F04 /* EmapthyAi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		92C1CC138B3E19C0FF3795D3 /* EmapthyAiLayoutTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 493D563D6FC813430B57E49D /* Build configuration list for PBXNativeTarget "EmapthyAiLayoutTests" */;
+			buildPhases = (
+				5F83CD745B82D08385F65E92 /* Sources */,
+				B2BD1878E7AA47F0AC7A8F4A /* Frameworks */,
+				040B5B241ADEE5D888E0AD67 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EmapthyAiLayoutTests;
+			packageProductDependencies = (
+				00BEF1FE5B7B4E5C03035469 /* KeyboardKit */,
+			);
+			productName = EmapthyAiLayoutTests;
+			productReference = C5C8EF1EC887B825D271259C /* EmapthyAiLayoutTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		9BA97DEEC54C5EE741A96E21 /* EmapthyAiKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EA6773831DABF9E92A0C8FC4 /* Build configuration list for PBXNativeTarget "EmapthyAiKeyboard" */;
+			buildPhases = (
+				2A146B1EEC617DE0EFA0D066 /* Sources */,
+				1975D29B2E6A4A49617B845C /* Frameworks */,
+				BED4EADB47C1E7FE6E407114 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -385,82 +435,19 @@
 			);
 			name = EmapthyAiKeyboard;
 			packageProductDependencies = (
-				5B0BF83A1A1364CBC18E853D /* KeyboardKit */,
+				9975FFAF754B80129DB9699E /* KeyboardKit */,
 			);
 			productName = EmapthyAiKeyboard;
-			productReference = AD9B3A2F04DD4214679EC02C /* EmapthyAiKeyboard.appex */;
+			productReference = 2E767849F9377D700DEE6E3B /* EmapthyAiKeyboard.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		96124B750869C6BC5F8870F6 /* EmapthyAiLayoutTests */ = {
+		FB2DE6A9E50288E1A971F119 /* EmapthyAiAction */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E81727D049D68295A852658F /* Build configuration list for PBXNativeTarget "EmapthyAiLayoutTests" */;
+			buildConfigurationList = 429E5C7243EEC3EEF9A59986 /* Build configuration list for PBXNativeTarget "EmapthyAiAction" */;
 			buildPhases = (
-				874839867BCB861A4C3A58DA /* Sources */,
-				DF9787C8750A357C474B724F /* Frameworks */,
-				34C049768364CA21CE8B7EFD /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = EmapthyAiLayoutTests;
-			packageProductDependencies = (
-				F91F62876278156694B8FDAB /* KeyboardKit */,
-				213A23AF938E4266052A2A48 /* KeyboardKitPro */,
-			);
-			productName = EmapthyAiLayoutTests;
-			productReference = 3542F5B895AE754D01CF45FC /* EmapthyAiLayoutTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		96E1BE7B79CA887CCB3F3F5B /* EmapthyAiUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 31BC643C0E48EEB604EDFC01 /* Build configuration list for PBXNativeTarget "EmapthyAiUITests" */;
-			buildPhases = (
-				1768D46C83568DA16BD4BD43 /* Sources */,
-				CBBE6F52A1578DB8DB9F8611 /* Frameworks */,
-				5AF86D9C0923DC4496D56E2E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				FB0E56B5B7736118B488C7EA /* PBXTargetDependency */,
-			);
-			name = EmapthyAiUITests;
-			productName = EmapthyAiUITests;
-			productReference = 93ACCB54589EC6E4A50DC3F5 /* EmapthyAiUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
-		C7266294CC95DD8F426319EF /* EmapthyAi */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 5408B6257AB1F0472DB7B9A2 /* Build configuration list for PBXNativeTarget "EmapthyAi" */;
-			buildPhases = (
-				EAA5A965BBDA816E7BB5CD5B /* Sources */,
-				C7C8000187994B301407C0AC /* Frameworks */,
-				00EBC68EFD810A0BB7D5D86A /* Resources */,
-				751342BDF94FEF8DC098A612 /* Embed Foundation Extensions */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				71707262D372A77AC796C3C5 /* PBXTargetDependency */,
-				81BA213DD5641389E4234327 /* PBXTargetDependency */,
-			);
-			name = EmapthyAi;
-			packageProductDependencies = (
-				877B675937ADE35A1D10A96E /* KeyboardKit */,
-				D125B56352B055E6C8A69466 /* KeyboardKitPro */,
-			);
-			productName = EmapthyAi;
-			productReference = 1B044EEA68860F0623621EC6 /* EmapthyAi.app */;
-			productType = "com.apple.product-type.application";
-		};
-		CD31BBEA13E7E3A5CFDF4D73 /* EmapthyAiAction */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8BD2CF52F5C9EDAB74C760E1 /* Build configuration list for PBXNativeTarget "EmapthyAiAction" */;
-			buildPhases = (
-				FE9835520D2A61054C12DFD0 /* Sources */,
-				62E93E0BC1531BAD7452C44E /* Frameworks */,
-				FE175BFEDDF8D7001EABD73C /* Resources */,
+				E2178B1FD5AE07838B0A7CEC /* Sources */,
+				4AC37174F3D340C1DFB7902F /* Frameworks */,
+				CAB70626AD32632468F23BAC /* Resources */,
 			);
 			buildRules = (
 			);
@@ -468,26 +455,26 @@
 			);
 			name = EmapthyAiAction;
 			productName = EmapthyAiAction;
-			productReference = 6480C0F80C62D596721CC5AB /* EmapthyAiAction.appex */;
+			productReference = 8FB8F3A47C5315557C70BD4C /* EmapthyAiAction.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		7D92DC85D34ADCC4A312F3B2 /* Project object */ = {
+		8C7D905802BBAE3343783E8D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					0B6497558011405208012437 = {
+					5CE39B0FE6EE34F0DF41D505 = {
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
 							};
 						};
 					};
-					C7266294CC95DD8F426319EF = {
+					9BA97DEEC54C5EE741A96E21 = {
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -496,7 +483,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6CAED23FACDC63F3FC5C333B /* Build configuration list for PBXProject "EmapthyAi" */;
+			buildConfigurationList = FF47F5109CE24CFCC63ADA33 /* Build configuration list for PBXProject "EmapthyAi" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -504,57 +491,56 @@
 				en,
 				Base,
 			);
-			mainGroup = 32BA77ACC0B67D391BFCB2BA;
+			mainGroup = C83168DC29CE904A50BC476F;
 			minimizedProjectReferenceProxies = 0;
 			packageReferences = (
-				FFDDF53602F72D79519D05E9 /* XCRemoteSwiftPackageReference "KeyboardKit" */,
-				E1D3091FC284FCF48FBA609F /* XCRemoteSwiftPackageReference "KeyboardKitPro" */,
+				EFCBCCFC214FBEBFA77FBE40 /* XCRemoteSwiftPackageReference "KeyboardKit" */,
 			);
 			preferredProjectObjectVersion = 100;
-			productRefGroup = BFCFF9A127B443BB53B7C049 /* Products */;
+			productRefGroup = A889C2C1A333AB5F1FCC4546 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C7266294CC95DD8F426319EF /* EmapthyAi */,
-				0B6497558011405208012437 /* EmapthyAiKeyboard */,
-				CD31BBEA13E7E3A5CFDF4D73 /* EmapthyAiAction */,
-				96124B750869C6BC5F8870F6 /* EmapthyAiLayoutTests */,
-				96E1BE7B79CA887CCB3F3F5B /* EmapthyAiUITests */,
+				5CE39B0FE6EE34F0DF41D505 /* EmapthyAi */,
+				9BA97DEEC54C5EE741A96E21 /* EmapthyAiKeyboard */,
+				FB2DE6A9E50288E1A971F119 /* EmapthyAiAction */,
+				92C1CC138B3E19C0FF3795D3 /* EmapthyAiLayoutTests */,
+				3C26A2F42A7C2B36C9A124F0 /* EmapthyAiUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		00EBC68EFD810A0BB7D5D86A /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E8BADED43B4EDDAFEE5F983D /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		34C049768364CA21CE8B7EFD /* Resources */ = {
+		040B5B241ADEE5D888E0AD67 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3772A1C34EB63C49057A4DF8 /* Resources */ = {
+		B81F13F904E8BA4991869CED /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5AF86D9C0923DC4496D56E2E /* Resources */ = {
+		BED4EADB47C1E7FE6E407114 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FE175BFEDDF8D7001EABD73C /* Resources */ = {
+		C7F75AE6D45127765392522A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AEA3AEF02EFFCB264D907786 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAB70626AD32632468F23BAC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -564,246 +550,122 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1768D46C83568DA16BD4BD43 /* Sources */ = {
+		1022D219EA7299CC56A20172 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C673AA2A19792A7423DACC8 /* NativeKeyboardMeasurementUITest.swift in Sources */,
-				EB29BC91B48831578D301F6D /* RealKeyboardAutocorrectUITest.swift in Sources */,
-				64A262347F2A93A2C0CCAD90 /* RealKeyboardHeightGapUITest.swift in Sources */,
-				1BB7E7885C9B7155E9785750 /* RealKeyboardIdleClipUITest.swift in Sources */,
-				EEB645132A578A04339A7D96 /* RealKeyboardTestSupport.swift in Sources */,
-				C6CFF682D91DA00F0CCD7C9B /* ReviewCardScrollUITests.swift in Sources */,
+				31C6764EC881D45A16F6CED4 /* AppDelegate.swift in Sources */,
+				A91431860BDA24C6C652B6A6 /* ReviewCardUITestHostViewController.swift in Sources */,
+				40901D73531733B84F1658E3 /* SceneDelegate.swift in Sources */,
+				A0F3791949A1D5A0EBCF0585 /* SettingsViewController.swift in Sources */,
+				2772286986C72612AF939E84 /* EmapthyAiActionHandler.swift in Sources */,
+				C22AE6F9475368CEC21A0CEE /* EmapthyAiCustomKeyboardView.swift in Sources */,
+				C0F5D58D55DBC86DD331402E /* EmapthyAiToolbarModel.swift in Sources */,
+				803938352A1E9AFB3E30B7C4 /* EmapthyAiToolbarView.swift in Sources */,
+				CFFB59225C217B792FF22B3F /* KeyboardViewController.swift in Sources */,
+				B8A39B206DF74346E6D40D9F /* NativeKeyboardMetrics.swift in Sources */,
+				F7124A95D03591A71C49F6CC /* EmapthyAiKeyboardApp.swift in Sources */,
+				EDA8A593074439D827067CBE /* ReviewFlow.swift in Sources */,
+				2FB4B0274547F1EA3D468B7E /* RewriteAPI.swift in Sources */,
+				EC88831AC69162741C0A6FF1 /* RewriteResult.swift in Sources */,
+				440CE66660975D0F7DE34B1C /* RewriteSettings.swift in Sources */,
+				8CA6F407D541E3D3DA187B1C /* Tokens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		43123776659FD75E648C9D92 /* Sources */ = {
+		2A146B1EEC617DE0EFA0D066 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E34EA26C7B90C27096915954 /* KeyboardViewController.swift in Sources */,
-				664F7AD775EBDCA25C2C76D1 /* NativeKeyboardMetrics.swift in Sources */,
-				AB4BFF6B5350D0992500C324 /* EmapthyAiActionHandler.swift in Sources */,
-				001126C426E5DB998E8492E4 /* EmapthyAiCustomKeyboardView.swift in Sources */,
-				F2D2AD10F92C88AFBBEDC03F /* EmapthyAiToolbarModel.swift in Sources */,
-				C4CA88F5CB026ED098682D88 /* EmapthyAiToolbarView.swift in Sources */,
-				E4310346B2CE9405FDA354B7 /* KeyboardKitLicense.swift in Sources */,
-				A9ED04DDAC8E416EF211D4DF /* EmapthyAiKeyboardApp.swift in Sources */,
-				04C3B1BFC5E1EBEA8249A271 /* ReviewFlow.swift in Sources */,
-				3F48026B5134D52A1CF5661A /* RewriteAPI.swift in Sources */,
-				3D8046C3E37886432FBA9B61 /* RewriteResult.swift in Sources */,
-				22FE3E9BB628B886C1DFB4DD /* RewriteSettings.swift in Sources */,
-				A8036D2733F9B5DF5DE1328D /* Tokens.swift in Sources */,
+				9C2219481EE52D6DF8C831D7 /* EmapthyAiActionHandler.swift in Sources */,
+				73572138045C5F21AFA9439A /* EmapthyAiCustomKeyboardView.swift in Sources */,
+				A32EEB5568CDB4A67B5404C8 /* EmapthyAiToolbarModel.swift in Sources */,
+				8D9F3DE81F0B927F1E705CA3 /* EmapthyAiToolbarView.swift in Sources */,
+				762373B810FC97DC204411A3 /* KeyboardViewController.swift in Sources */,
+				151DC042FC164833A00720D4 /* NativeKeyboardMetrics.swift in Sources */,
+				5D7D96DE686B4CCCA5AB4071 /* EmapthyAiKeyboardApp.swift in Sources */,
+				2DB8A83CB78ED8D569CEDB4C /* ReviewFlow.swift in Sources */,
+				321CCB4643DE1F5D6EEEF744 /* RewriteAPI.swift in Sources */,
+				54E2C449FFFE016C8AC1950F /* RewriteResult.swift in Sources */,
+				3E3CA12ADA66AA192D66C2AE /* RewriteSettings.swift in Sources */,
+				717CA26CD8A334176F9AADDA /* Tokens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		874839867BCB861A4C3A58DA /* Sources */ = {
+		5F83CD745B82D08385F65E92 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				913954B377F89BED4F0F642E /* KeyboardLayoutSnapshotTests.swift in Sources */,
-				DEADBD87CC1825B29892D8E1 /* ReviewCardHeightRegressionTests.swift in Sources */,
-				325957314208D5A8EAD61679 /* ToolbarPersonaModelTests.swift in Sources */,
-				EF1849B0DFA126F7A5489073 /* ToolbarRequestPromptSnapshotTests.swift in Sources */,
-				48C3038ADCD9EDB1E138FDC0 /* KeyboardViewController.swift in Sources */,
-				1764436D8EEE594BE6E51A7A /* NativeKeyboardMetrics.swift in Sources */,
-				E839C95B1C434EB469A3E110 /* EmapthyAiActionHandler.swift in Sources */,
-				B8BBEECA4639DB5F5C1D6B5B /* EmapthyAiCustomKeyboardView.swift in Sources */,
-				00C8D8C5C93AEBD0B13CD196 /* EmapthyAiToolbarModel.swift in Sources */,
-				940A0FF8E9378E4AF6277578 /* EmapthyAiToolbarView.swift in Sources */,
-				8EF41802FE66C4DBAA170706 /* KeyboardKitLicense.swift in Sources */,
-				066DF3F6123509922B3DC703 /* EmapthyAiKeyboardApp.swift in Sources */,
-				9D7B26D48BA736D62116F3ED /* ReviewFlow.swift in Sources */,
-				CFDDCDC91E7B693131075C6E /* RewriteAPI.swift in Sources */,
-				A90F9DD347A8C54770D11E84 /* RewriteResult.swift in Sources */,
-				DC9E5B9120497C91E53F97F1 /* RewriteSettings.swift in Sources */,
-				4D95342F1CE5942217553D91 /* Tokens.swift in Sources */,
+				DA91E7C2446147475B1BF5C2 /* KeyboardLayoutSnapshotTests.swift in Sources */,
+				0359FFD07F1941B5A19B9CC9 /* ReviewCardHeightRegressionTests.swift in Sources */,
+				E6DE7301A88FFCDBABF7E85B /* ToolbarPersonaModelTests.swift in Sources */,
+				78161592B3F35FE97DF21E67 /* ToolbarRequestPromptSnapshotTests.swift in Sources */,
+				167479762CDABD9D3E707D93 /* EmapthyAiActionHandler.swift in Sources */,
+				FA140D9A923F0BC9EB23920A /* EmapthyAiCustomKeyboardView.swift in Sources */,
+				5F46BFC7F4B9F6255D814A59 /* EmapthyAiToolbarModel.swift in Sources */,
+				C1425D77EBDA50366AB03457 /* EmapthyAiToolbarView.swift in Sources */,
+				A4F1BC8F7A7A9E1A633E5105 /* KeyboardViewController.swift in Sources */,
+				9E0D342F894B4EE4AAAE9A4C /* NativeKeyboardMetrics.swift in Sources */,
+				E6238AF355075D146D9E4A83 /* EmapthyAiKeyboardApp.swift in Sources */,
+				B0DAC0F5CDFBB3F41BD5B123 /* ReviewFlow.swift in Sources */,
+				9349EDB7088240AD891A7039 /* RewriteAPI.swift in Sources */,
+				4893389D75804B95E950BAC0 /* RewriteResult.swift in Sources */,
+				3D4F9A346633ED7F12379C41 /* RewriteSettings.swift in Sources */,
+				518CCCAC89FA91E001B45484 /* Tokens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		EAA5A965BBDA816E7BB5CD5B /* Sources */ = {
+		89643CB4BF4A674735473144 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3264731F55DA8536A31E206 /* AppDelegate.swift in Sources */,
-				3A063C3D75BD4D4863A38663 /* ReviewCardUITestHostViewController.swift in Sources */,
-				F5A079D65F8B05BF2162E406 /* SceneDelegate.swift in Sources */,
-				BB3F6D5C6A8ED5B32435DFAB /* SettingsViewController.swift in Sources */,
-				0C78F76839769D604740FF66 /* KeyboardViewController.swift in Sources */,
-				5E85AA724057C33FDF3A5362 /* NativeKeyboardMetrics.swift in Sources */,
-				F3B2F579B2BB6CDEFEFF83DF /* EmapthyAiActionHandler.swift in Sources */,
-				07049A3EDAA1418AA305F69A /* EmapthyAiCustomKeyboardView.swift in Sources */,
-				AE6B9712A6109BD0815CE20F /* EmapthyAiToolbarModel.swift in Sources */,
-				F8D0984884A27C2D316381F1 /* EmapthyAiToolbarView.swift in Sources */,
-				6228EB92A4FAA0CA23CB7C56 /* KeyboardKitLicense.swift in Sources */,
-				1025E52CE9BBF3D936EFEA19 /* EmapthyAiKeyboardApp.swift in Sources */,
-				CD113674B108985C7D89B1A7 /* ReviewFlow.swift in Sources */,
-				29281D0D5770E6CAD60398F9 /* RewriteAPI.swift in Sources */,
-				C46A3E40E47799115FBE246C /* RewriteResult.swift in Sources */,
-				1C5AE5218C61A95B55846DCD /* RewriteSettings.swift in Sources */,
-				DEE45D66BF01518885F2B4EB /* Tokens.swift in Sources */,
+				D11BD4B6F3B997E6FD90B350 /* NativeKeyboardMeasurementUITest.swift in Sources */,
+				CB89547AF18F6CAA57FE73FC /* RealKeyboardAutocorrectUITest.swift in Sources */,
+				38454619ECB3DD328D2B7E2C /* RealKeyboardHeightGapUITest.swift in Sources */,
+				C27E9FDD5F111411CE48F97D /* RealKeyboardIdleClipUITest.swift in Sources */,
+				DE55AB2C5E5744905388FEF6 /* RealKeyboardTestSupport.swift in Sources */,
+				4CA8476DCC69EA959AAC1D0F /* ReviewCardScrollUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FE9835520D2A61054C12DFD0 /* Sources */ = {
+		E2178B1FD5AE07838B0A7CEC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7499C9809647C624551389E /* ActionViewController.swift in Sources */,
-				6694BD287B0CD1EC02B64CF3 /* KeyboardKitLicense.swift in Sources */,
-				814EDF4BCB41943C30280C1B /* EmapthyAiKeyboardApp.swift in Sources */,
-				4F1A248B5FA76BF1D5461A16 /* ReviewFlow.swift in Sources */,
-				62B95FE9870584A173C2832B /* RewriteAPI.swift in Sources */,
-				A20B10145BE138B2866DD890 /* RewriteResult.swift in Sources */,
-				C3B505335027B97739D4ECDD /* RewriteSettings.swift in Sources */,
-				A21EA1B9407CD23181C7C923 /* Tokens.swift in Sources */,
+				3FA9FCDAB5D6B44DAE73F505 /* ActionViewController.swift in Sources */,
+				4DA97423E3A5B88E0B239D97 /* ReviewFlow.swift in Sources */,
+				D98E3965C9659350627B6076 /* RewriteAPI.swift in Sources */,
+				69388B1A262D759376F114E7 /* RewriteResult.swift in Sources */,
+				D068447797F29E9383693FBE /* RewriteSettings.swift in Sources */,
+				9F17D25A77C6B7C2D509E663 /* Tokens.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		71707262D372A77AC796C3C5 /* PBXTargetDependency */ = {
+		3464EBAE2E4BB2A84134B238 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EmapthyAiKeyboard;
-			target = 0B6497558011405208012437 /* EmapthyAiKeyboard */;
-			targetProxy = 4834163F441351355E1B874F /* PBXContainerItemProxy */;
+			target = 9BA97DEEC54C5EE741A96E21 /* EmapthyAiKeyboard */;
+			targetProxy = 50FF789813694B3378C25191 /* PBXContainerItemProxy */;
 		};
-		81BA213DD5641389E4234327 /* PBXTargetDependency */ = {
+		8B6023F807FC2BEE4CDD6AF2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EmapthyAiAction;
-			target = CD31BBEA13E7E3A5CFDF4D73 /* EmapthyAiAction */;
-			targetProxy = 20B15DEF661DAC0F1ADDF8C0 /* PBXContainerItemProxy */;
+			target = FB2DE6A9E50288E1A971F119 /* EmapthyAiAction */;
+			targetProxy = 78541D1F617CE5C58ECEA5D7 /* PBXContainerItemProxy */;
 		};
-		FB0E56B5B7736118B488C7EA /* PBXTargetDependency */ = {
+		F68472074DBA3636C4BCE644 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EmapthyAi;
-			target = C7266294CC95DD8F426319EF /* EmapthyAi */;
-			targetProxy = CED0959C9BA31CBAE506287F /* PBXContainerItemProxy */;
+			target = 5CE39B0FE6EE34F0DF41D505 /* EmapthyAi */;
+			targetProxy = 0FFFF688F1B960713A109CF0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		051B8860D501CAD0172E3D0B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.LayoutTests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		1F322AF12300F1625E7DA217 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = EmapthyAiKeyboard/EmapthyAiKeyboard.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = EmapthyAiKeyboard/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.Keyboard;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		531BBA8BA1754C8E62630D7B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = EmapthyAiKeyboard/EmapthyAiKeyboard.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = EmapthyAiKeyboard/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.Keyboard;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		683EFB26DD41D7A37908222D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = EmapthyAi/EmapthyAi.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = EmapthyAi/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		6B8AEA87EFA904BA8260640D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.UITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				TEST_TARGET_NAME = EmapthyAi;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		70B9593B2D7A6EE7BBE51544 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.LayoutTests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		79930C5ADE769EB717D2B4F6 /* Release */ = {
+		2E4ECB8606F2E4524A9583A4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -824,122 +686,7 @@
 			};
 			name = Release;
 		};
-		79A2D62389B06E055876FC42 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.UITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				TEST_TARGET_NAME = EmapthyAi;
-			};
-			name = Debug;
-		};
-		B472D290C972EEC4D7751CC9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		CAC2357A47C099C53F0D31D2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = EmapthyAi/EmapthyAi.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = EmapthyAi/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		DE12063DF27300A2095F0F4B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = EmapthyAiAction/EmapthyAiAction.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3AXMP8C34Z;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = EmapthyAiAction/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.Action;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		DFE9A879685167A57269C953 /* Debug */ = {
+		5AC5907BED4919874805844B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1000,59 +747,295 @@
 			};
 			name = Debug;
 		};
+		69FED3DC98BFDF7EFB53510F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.LayoutTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		8DE15324849A75389614B30D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.UITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = EmapthyAi;
+			};
+			name = Debug;
+		};
+		99BF14AEABEE65CAA6E484A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.LayoutTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9E84FC550223422F72FE9636 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = EmapthyAiAction/EmapthyAiAction.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EmapthyAiAction/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.Action;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A400C2162D25636EDA1B2401 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.UITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = EmapthyAi;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B8F0A8DDE4419E5210CBFBEA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = EmapthyAiKeyboard/EmapthyAiKeyboard.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EmapthyAiKeyboard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.Keyboard;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CAEF44129CBE6B0D8E1B4D5D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E169D866DAB3B217297E6225 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = EmapthyAi/EmapthyAi.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				EMAPTHYAI_DEV_API_URL = "http://192.168.1.106:8787";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EmapthyAi/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		E65C328631E22DC0E43CF54D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = EmapthyAi/EmapthyAi.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EmapthyAi/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EEF6C8CBCBEC820C9617D3CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = EmapthyAiKeyboard/EmapthyAiKeyboard.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = 3AXMP8C34Z;
+				EMAPTHYAI_DEV_API_URL = "http://192.168.1.106:8787";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EmapthyAiKeyboard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nekocatpitalventures.emapthyai.Keyboard;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		31BC643C0E48EEB604EDFC01 /* Build configuration list for PBXNativeTarget "EmapthyAiUITests" */ = {
+		34D17113B831C961CCF1F232 /* Build configuration list for PBXNativeTarget "EmapthyAiUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6B8AEA87EFA904BA8260640D /* Release */,
-				79A2D62389B06E055876FC42 /* Debug */,
+				A400C2162D25636EDA1B2401 /* Release */,
+				8DE15324849A75389614B30D /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5408B6257AB1F0472DB7B9A2 /* Build configuration list for PBXNativeTarget "EmapthyAi" */ = {
+		429E5C7243EEC3EEF9A59986 /* Build configuration list for PBXNativeTarget "EmapthyAiAction" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CAC2357A47C099C53F0D31D2 /* Release */,
-				683EFB26DD41D7A37908222D /* Debug */,
+				2E4ECB8606F2E4524A9583A4 /* Release */,
+				9E84FC550223422F72FE9636 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6CAED23FACDC63F3FC5C333B /* Build configuration list for PBXProject "EmapthyAi" */ = {
+		493D563D6FC813430B57E49D /* Build configuration list for PBXNativeTarget "EmapthyAiLayoutTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DFE9A879685167A57269C953 /* Debug */,
-				B472D290C972EEC4D7751CC9 /* Release */,
+				99BF14AEABEE65CAA6E484A7 /* Release */,
+				69FED3DC98BFDF7EFB53510F /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8BD2CF52F5C9EDAB74C760E1 /* Build configuration list for PBXNativeTarget "EmapthyAiAction" */ = {
+		7C96E570C97A23496E6386C2 /* Build configuration list for PBXNativeTarget "EmapthyAi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				79930C5ADE769EB717D2B4F6 /* Release */,
-				DE12063DF27300A2095F0F4B /* Debug */,
+				E65C328631E22DC0E43CF54D /* Release */,
+				E169D866DAB3B217297E6225 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D461450424B1D425BD75B10F /* Build configuration list for PBXNativeTarget "EmapthyAiKeyboard" */ = {
+		EA6773831DABF9E92A0C8FC4 /* Build configuration list for PBXNativeTarget "EmapthyAiKeyboard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1F322AF12300F1625E7DA217 /* Release */,
-				531BBA8BA1754C8E62630D7B /* Debug */,
+				B8F0A8DDE4419E5210CBFBEA /* Release */,
+				EEF6C8CBCBEC820C9617D3CA /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E81727D049D68295A852658F /* Build configuration list for PBXNativeTarget "EmapthyAiLayoutTests" */ = {
+		FF47F5109CE24CFCC63ADA33 /* Build configuration list for PBXProject "EmapthyAi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				051B8860D501CAD0172E3D0B /* Release */,
-				70B9593B2D7A6EE7BBE51544 /* Debug */,
+				5AC5907BED4919874805844B /* Debug */,
+				CAEF44129CBE6B0D8E1B4D5D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1060,15 +1043,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E1D3091FC284FCF48FBA609F /* XCRemoteSwiftPackageReference "KeyboardKitPro" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/KeyboardKit/KeyboardKitPro.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
-			};
-		};
-		FFDDF53602F72D79519D05E9 /* XCRemoteSwiftPackageReference "KeyboardKit" */ = {
+		EFCBCCFC214FBEBFA77FBE40 /* XCRemoteSwiftPackageReference "KeyboardKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/KeyboardKit/KeyboardKit.git";
 			requirement = {
@@ -1079,32 +1054,22 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		213A23AF938E4266052A2A48 /* KeyboardKitPro */ = {
+		00BEF1FE5B7B4E5C03035469 /* KeyboardKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E1D3091FC284FCF48FBA609F /* XCRemoteSwiftPackageReference "KeyboardKitPro" */;
-			productName = KeyboardKitPro;
-		};
-		5B0BF83A1A1364CBC18E853D /* KeyboardKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FFDDF53602F72D79519D05E9 /* XCRemoteSwiftPackageReference "KeyboardKit" */;
+			package = EFCBCCFC214FBEBFA77FBE40 /* XCRemoteSwiftPackageReference "KeyboardKit" */;
 			productName = KeyboardKit;
 		};
-		877B675937ADE35A1D10A96E /* KeyboardKit */ = {
+		9975FFAF754B80129DB9699E /* KeyboardKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = FFDDF53602F72D79519D05E9 /* XCRemoteSwiftPackageReference "KeyboardKit" */;
+			package = EFCBCCFC214FBEBFA77FBE40 /* XCRemoteSwiftPackageReference "KeyboardKit" */;
 			productName = KeyboardKit;
 		};
-		D125B56352B055E6C8A69466 /* KeyboardKitPro */ = {
+		9CDA5AD466D4031AD231E65C /* KeyboardKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E1D3091FC284FCF48FBA609F /* XCRemoteSwiftPackageReference "KeyboardKitPro" */;
-			productName = KeyboardKitPro;
-		};
-		F91F62876278156694B8FDAB /* KeyboardKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FFDDF53602F72D79519D05E9 /* XCRemoteSwiftPackageReference "KeyboardKit" */;
+			package = EFCBCCFC214FBEBFA77FBE40 /* XCRemoteSwiftPackageReference "KeyboardKit" */;
 			productName = KeyboardKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 7D92DC85D34ADCC4A312F3B2 /* Project object */;
+	rootObject = 8C7D905802BBAE3343783E8D /* Project object */;
 }

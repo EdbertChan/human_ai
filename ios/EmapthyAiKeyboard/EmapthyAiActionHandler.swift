@@ -1,4 +1,4 @@
-import KeyboardKitPro
+import KeyboardKit
 
 // Restores Apple's revert-on-backspace: on the native keyboard, a single
 // backspace immediately after an autocorrection undoes the correction and

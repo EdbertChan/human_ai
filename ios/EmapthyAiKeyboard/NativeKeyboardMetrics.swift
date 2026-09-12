@@ -1,4 +1,4 @@
-import KeyboardKitPro
+import KeyboardKit
 import SwiftUI
 
 // Matches the key geometry of Apple's own keyboard, measured live via
@@ -15,11 +15,8 @@ import SwiftUI
 // The patch keeps the liquid-glass STYLING (colors, corner radius, shadows)
 // and only restores the native geometry.
 //
-// Deliberately NOT a KeyboardLayoutService replacement: Pro's license
-// registration calls tryRegisterLocalizedService on the current service,
-// which throws (and killed the extension) unless that service is a
-// KeyboardLayout.StandardLayoutService — so the patch is applied to the
-// resolved layout at view composition instead of wrapping the service.
+// Deliberately not a KeyboardLayoutService replacement: the patch is applied
+// to the resolved layout at view composition instead of wrapping the service.
 enum NativeKeyboardMetrics {
     private static let sideMargin: CGFloat = 3.5
 

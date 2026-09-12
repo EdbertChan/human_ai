@@ -1,5 +1,0 @@
-// Copy this file to KeyboardKitLicense.swift (gitignored) and paste in the
-// real license key from keyboardkit.com. Never commit the real key.
-enum KeyboardKitLicense {
-    static let key = ""
-}

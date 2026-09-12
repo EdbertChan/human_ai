@@ -25,6 +25,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>EmapthyAi uses the microphone to relay a corporate voice message.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>EmapthyAiDevAPIURL</key>

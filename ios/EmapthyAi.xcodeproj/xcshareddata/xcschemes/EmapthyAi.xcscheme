@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C7266294CC95DD8F426319EF"
+               BlueprintIdentifier = "5CE39B0FE6EE34F0DF41D505"
                BuildableName = "EmapthyAi.app"
                BlueprintName = "EmapthyAi"
                ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0B6497558011405208012437"
+               BlueprintIdentifier = "9BA97DEEC54C5EE741A96E21"
                BuildableName = "EmapthyAiKeyboard.appex"
                BlueprintName = "EmapthyAiKeyboard"
                ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CD31BBEA13E7E3A5CFDF4D73"
+               BlueprintIdentifier = "FB2DE6A9E50288E1A971F119"
                BuildableName = "EmapthyAiAction.appex"
                BlueprintName = "EmapthyAiAction"
                ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -58,7 +58,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C7266294CC95DD8F426319EF"
+            BlueprintIdentifier = "5CE39B0FE6EE34F0DF41D505"
             BuildableName = "EmapthyAi.app"
             BlueprintName = "EmapthyAi"
             ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -69,7 +69,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96124B750869C6BC5F8870F6"
+               BlueprintIdentifier = "92C1CC138B3E19C0FF3795D3"
                BuildableName = "EmapthyAiLayoutTests.xctest"
                BlueprintName = "EmapthyAiLayoutTests"
                ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -79,7 +79,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96E1BE7B79CA887CCB3F3F5B"
+               BlueprintIdentifier = "3C26A2F42A7C2B36C9A124F0"
                BuildableName = "EmapthyAiUITests.xctest"
                BlueprintName = "EmapthyAiUITests"
                ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -101,7 +101,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C7266294CC95DD8F426319EF"
+            BlueprintIdentifier = "5CE39B0FE6EE34F0DF41D505"
             BuildableName = "EmapthyAi.app"
             BlueprintName = "EmapthyAi"
             ReferencedContainer = "container:EmapthyAi.xcodeproj">
@@ -118,7 +118,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C7266294CC95DD8F426319EF"
+            BlueprintIdentifier = "5CE39B0FE6EE34F0DF41D505"
             BuildableName = "EmapthyAi.app"
             BlueprintName = "EmapthyAi"
             ReferencedContainer = "container:EmapthyAi.xcodeproj">

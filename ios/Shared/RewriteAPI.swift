@@ -36,11 +36,11 @@ struct VoiceRelayResult: Codable, Equatable {
 }
 
 enum RewriteAPI {
-    static func relayVoice(baseURL: String, token: String, distinctID: String, audio: Data, mimeType: String = "audio/mp4") async throws -> VoiceRelayResult {
+    static func relayVoice(baseURL: String, token: String, distinctID: String, audio: Data, mimeType: String = "audio/mp4", persona: String = "corporate") async throws -> VoiceRelayResult {
         var request = try makeRequest(baseURL: baseURL, path: "/v1/voice/relay", token: token)
         let boundary = "Boundary-\(UUID().uuidString)"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.httpBody = multipartBody(boundary: boundary, distinctID: distinctID, audio: audio, mimeType: mimeType)
+        request.httpBody = multipartBody(boundary: boundary, distinctID: distinctID, persona: persona, audio: audio, mimeType: mimeType)
         let (data, response) = try await URLSession.shared.data(for: request)
         try validate(response: response, data: data, failure: "Voice relay failed")
         return try JSONDecoder().decode(VoiceRelayResult.self, from: data)
@@ -177,11 +177,11 @@ enum RewriteAPI {
         return request
     }
 
-    private static func multipartBody(boundary: String, distinctID: String, audio: Data, mimeType: String) -> Data {
+    private static func multipartBody(boundary: String, distinctID: String, persona: String, audio: Data, mimeType: String) -> Data {
         var body = Data()
         func append(_ string: String) { body.append(Data(string.utf8)) }
         append("--\(boundary)\r\nContent-Disposition: form-data; name=\"distinctId\"\r\n\r\n\(distinctID)\r\n")
-        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"persona\"\r\n\r\ncorporate\r\n")
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"persona\"\r\n\r\n\(persona)\r\n")
         append("--\(boundary)\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"voice.m4a\"\r\nContent-Type: \(mimeType)\r\n\r\n")
         body.append(audio)
         append("\r\n--\(boundary)--\r\n")

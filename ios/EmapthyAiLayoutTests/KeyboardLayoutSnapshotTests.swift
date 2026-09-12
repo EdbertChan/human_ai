@@ -1,6 +1,6 @@
 import XCTest
 import SwiftUI
-import KeyboardKitPro
+import KeyboardKit
 
 // Renders EmapthyAiCustomKeyboardView directly via SwiftUI's own
 // ImageRenderer, so a layout/setup regression shows up in `xcodebuild test`
@@ -9,30 +9,12 @@ import KeyboardKitPro
 // drawHierarchy/layer.render) doesn't work off-screen — iOS's "render
 // server" explicitly refuses to snapshot a UIInputView without a live
 // keyboard-host connection — so this renders the composed SwiftUI content
-// view on its own instead, after waiting for the real controller's
-// KeyboardKit Pro setup (network license check) to finish.
+// view on its own.
 final class KeyboardLayoutSnapshotTests: XCTestCase {
     @MainActor
     func testToolbarIsVisibleAtStandardKeyboardHeight() throws {
         let vc = KeyboardViewController()
-        let setupDone = expectation(description: "KeyboardKit Pro setup completes")
-        var setupResult: Result<License, Error>?
-        vc.setupCompletionForTesting = { result in
-            setupResult = result
-            setupDone.fulfill()
-        }
         vc.loadViewIfNeeded()
-        wait(for: [setupDone], timeout: 15)
-
-        switch setupResult {
-        case .success:
-            print("LICENSE_SETUP_RESULT=success")
-        case .failure(let error):
-            print("LICENSE_SETUP_RESULT=failure error=\(error)")
-            XCTFail("KeyboardKit Pro license setup failed: \(error)")
-        case nil:
-            XCTFail("License setup completion never fired")
-        }
 
         let toolbarModel = EmapthyAiToolbarModel()
         toolbarModel.hasFullAccess = false

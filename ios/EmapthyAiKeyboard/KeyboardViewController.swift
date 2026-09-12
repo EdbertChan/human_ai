@@ -2,13 +2,11 @@ import Combine
 import UIKit
 import AVFoundation
 import os.log
-import KeyboardKitPro
+import KeyboardKit
 
-// Built on KeyboardKit Pro instead of a hand-rolled UIStackView keyboard —
-// same approach Grammarly/SwiftKey/Wordtune use, since iOS gives no way to
-// add a bar on top of Apple's own keyboard. KeyboardKit renders the real
-// key layout and Pro autocomplete; EmapthyAiCustomKeyboardView adds our
-// rewrite bar above KeyboardKit's own toolbar rather than replacing it.
+// Built on KeyboardKit instead of a hand-rolled UIStackView keyboard.
+// EmapthyAiCustomKeyboardView adds our rewrite bar above KeyboardKit's own
+// toolbar rather than replacing it.
 final class KeyboardViewController: KeyboardInputViewController {
     private var flowState = ReviewFlow.createFlow()
     private var pendingResult: RewriteResult?
@@ -22,7 +20,6 @@ final class KeyboardViewController: KeyboardInputViewController {
     private var personaConfigLoaded = false
     private var voiceRecorder: AVAudioRecorder?
     private var voicePlayer: AVAudioPlayer?
-
     // Only used by EmapthyAiLayoutTests to know when the async KeyboardKit
     // Pro setup (network license check) has actually finished, since a
     // snapshot taken before that races the real render.
@@ -88,10 +85,6 @@ final class KeyboardViewController: KeyboardInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Before setup(for:): Pro's license setup pushes the unlocked
-        // autocomplete service into whatever StandardActionHandler subclass
-        // is installed at that point (Keyboard.Services.autocompleteService
-        // didSet), so the revert handler must already be in place.
         services.actionHandler = EmapthyAiActionHandler(controller: self)
         wireActionHandlerTrace()
         // The prompt/confirmation cards live in the toolbar model, outside
@@ -155,31 +148,11 @@ final class KeyboardViewController: KeyboardInputViewController {
         heightConstraint.priority = .required
         heightConstraint.isActive = true
         self.heightConstraint = heightConstraint
-        setup(for: .emapthyAi) { [weak self] result in
-            if case .failure(let error) = result {
-                // A failed license validation is otherwise invisible: the
-                // keyboard still types, but KeyboardKit leaves autocomplete
-                // and autocorrect on the disabled service.
-                os_log(.error, "KeyboardKit Pro setup failed; autocomplete/autocorrect stay disabled: %{public}@", String(describing: error))
-            }
-            if let self {
-                // Pro's license registration can swap services after this
-                // async setup; if the revert handler was evicted, put it
-                // back — the fresh instance picks up the now-unlocked Pro
-                // autocomplete service from services at init.
-                if !(self.services.actionHandler is EmapthyAiActionHandler) {
-                    self.services.actionHandler = EmapthyAiActionHandler(controller: self)
-                    self.wireActionHandlerTrace()
-                }
-                #if DEBUG
-                // Read by RealKeyboardAutocorrectUITest to report which
-                // action handler is actually live on-device.
-                self.view.accessibilityValue = "handler=\(type(of: self.services.actionHandler))"
-                #endif
-            }
-            self?.refreshFullAccess()
-            self?.setupCompletionForTesting?(result)
-        }
+        setup(for: .emapthyAi)
+        #if DEBUG
+        view.accessibilityValue = "handler=\(type(of: services.actionHandler))"
+        #endif
+        refreshFullAccess()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -349,7 +322,6 @@ final class KeyboardViewController: KeyboardInputViewController {
         return error.localizedDescription
     }
 
-
     private func toggleVoiceRecording() {
         if voiceRecorder != nil { finishVoiceRecording(); return }
         AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
@@ -379,7 +351,7 @@ final class KeyboardViewController: KeyboardInputViewController {
         Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let result = try await RewriteAPI.relayVoice(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), audio: Data(contentsOf: url), mimeType: "audio/mp4")
+                let result = try await RewriteAPI.relayVoice(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), audio: Data(contentsOf: url), mimeType: "audio/mp4", persona: self.toolbarModel.voicePersonaID)
                 try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
                 try AVAudioSession.sharedInstance().setActive(true)
                 self.voicePlayer = try AVAudioPlayer(data: result.audio)
@@ -388,7 +360,6 @@ final class KeyboardViewController: KeyboardInputViewController {
             try? FileManager.default.removeItem(at: url)
         }
     }
-
     private func sendDraft() {
         guard let result = pendingResult else {
             dispatch(ReviewFlow.Event(type: "SEND_FAILED", message: "The text field is no longer active."))
