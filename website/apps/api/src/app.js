@@ -3,7 +3,8 @@ import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI } from "./openai.js";
 import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
 import { rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
-import { createVoice, synthesizeSpeech as synthesizeSpeechWithElevenLabs, ElevenLabsProviderError } from "./elevenlabs.js";
+import { createVoice, registerTwilioCall as registerTwilioCallWithElevenLabs, startTwilioCall as startTwilioCallWithElevenLabs, synthesizeSpeech as synthesizeSpeechWithElevenLabs, ElevenLabsProviderError } from "./elevenlabs.js";
+import { twilioFormParams, verifyBearerToken, verifyTwilioSignature } from "./twilio.js";
 import { PERSONAS, personaOptions, resolvePersona } from "./personas.js";
 import {
   DurableConfigError,
@@ -34,6 +35,13 @@ function json(status, body, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...JSON_HEADERS, ...extraHeaders }
+  });
+}
+
+function xml(status, body, extraHeaders = {}) {
+  return new Response(body, {
+    status,
+    headers: { "content-type": "application/xml; charset=utf-8", ...extraHeaders }
   });
 }
 
@@ -146,6 +154,8 @@ export function createHandler(env = process.env, dependencies = {}) {
   const exaSearch = dependencies.exaSearch ?? searchExa;
   const synthesizeOpenAI = dependencies.synthesizeSpeech ?? synthesizeSpeechWithOpenAI;
   const synthesizeElevenLabs = dependencies.synthesizeElevenLabsSpeech ?? synthesizeSpeechWithElevenLabs;
+  const registerTwilioCall = dependencies.registerTwilioCall ?? registerTwilioCallWithElevenLabs;
+  const startTwilioCall = dependencies.startTwilioCall ?? startTwilioCallWithElevenLabs;
   const legacyEmpathyEvaluator = !accountDeviceStore && env.NODE_ENV === "test";
   const empathyAccessFor = dependencies.evaluateEmpathyAccess ?? ((accountDistinctId) => evaluateEmpathyAccess({
     distinctId: accountDistinctId,
@@ -222,7 +232,8 @@ export function createHandler(env = process.env, dependencies = {}) {
   return async function handle(request) {
     const url = new URL(request.url);
     const cors = corsHeaders(request, env);
-    const hasBearer = request.headers.has("authorization");
+    const isTelephonyOutbound = request.method === "POST" && url.pathname === "/v1/telephony/twilio/outbound";
+    const hasBearer = request.headers.has("authorization") && !isTelephonyOutbound;
     let accountAuthError = null;
     if (hasBearer) {
       try { await accountFor(request); }
@@ -339,6 +350,64 @@ export function createHandler(env = process.env, dependencies = {}) {
       return json(200, {
         conversationContext: access === "available" ? "available" : "locked"
       }, { ...cors, "cache-control": "no-store" });
+    }
+
+    if (request.method === "POST" && url.pathname === "/v1/telephony/twilio/incoming") {
+      let form;
+      try { form = await request.formData(); } catch { return xml(400, "<Response><Say>Invalid request.</Say></Response>"); }
+      const params = twilioFormParams(form);
+      if (!env.TWILIO_AUTH_TOKEN) return json(503, { error: "telephony_not_configured", message: "TWILIO_AUTH_TOKEN is not configured." }, cors);
+      if (!verifyTwilioSignature({ url: env.TWILIO_WEBHOOK_URL ?? request.url, params, signature: request.headers.get("x-twilio-signature"), authToken: env.TWILIO_AUTH_TOKEN })) {
+        return json(403, { error: "invalid_twilio_signature", message: "Twilio signature verification failed." }, cors);
+      }
+      const fromNumber = params.get("From");
+      const toNumber = params.get("To");
+      const callSid = params.get("CallSid");
+      if (!fromNumber || !toNumber) return xml(400, "<Response><Say>Missing phone number.</Say></Response>");
+      if (!env.ELEVENLABS_AGENT_ID) return json(503, { error: "telephony_not_configured", message: "ELEVENLABS_AGENT_ID is not configured." }, cors);
+      try {
+        const twiml = await registerTwilioCall({
+          agentId: env.ELEVENLABS_AGENT_ID,
+          fromNumber,
+          toNumber,
+          direction: "inbound",
+          apiKey: env.ELEVENLABS_API_KEY,
+          clientData: callSid ? { dynamic_variables: { call_sid: callSid } } : undefined,
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        return xml(200, twiml);
+      } catch (error) {
+        if (error instanceof TypeError) return xml(400, "<Response><Say>Invalid call.</Say></Response>");
+        if (error instanceof ElevenLabsProviderError && error.status === 503) return json(503, { error: "telephony_not_configured", message: "Configure ElevenLabs telephony on the server." }, cors);
+        return json(502, { error: "telephony_provider_failed", message: "Telephony provider failed." }, cors);
+      }
+    }
+
+    if (request.method === "POST" && url.pathname === "/v1/telephony/twilio/outbound") {
+      if (!env.TELEPHONY_OUTBOUND_TOKEN) return json(503, { error: "telephony_not_configured", message: "TELEPHONY_OUTBOUND_TOKEN is not configured." }, cors);
+      if (!verifyBearerToken(request, env.TELEPHONY_OUTBOUND_TOKEN)) return json(401, { error: "telephony_auth_required", message: "A valid telephony token is required." }, cors);
+      let body;
+      try { body = await request.json(); } catch { return json(400, { error: "invalid_json" }, cors); }
+      if (!body || typeof body !== "object" || Array.isArray(body) || typeof body.toNumber !== "string") return json(400, { error: "invalid_request", message: "toNumber is required." }, cors);
+      if (body.callRecordingEnabled !== undefined && typeof body.callRecordingEnabled !== "boolean") return json(400, { error: "invalid_request", message: "callRecordingEnabled must be boolean." }, cors);
+      if (body.clientData !== undefined && (!body.clientData || typeof body.clientData !== "object" || Array.isArray(body.clientData))) return json(400, { error: "invalid_request", message: "clientData must be an object." }, cors);
+      if (!env.ELEVENLABS_AGENT_ID || !env.ELEVENLABS_AGENT_PHONE_NUMBER_ID) return json(503, { error: "telephony_not_configured", message: "ElevenLabs agent phone configuration is missing." }, cors);
+      try {
+        const call = await startTwilioCall({
+          agentId: env.ELEVENLABS_AGENT_ID,
+          agentPhoneNumberId: env.ELEVENLABS_AGENT_PHONE_NUMBER_ID,
+          toNumber: body.toNumber,
+          callRecordingEnabled: body.callRecordingEnabled,
+          clientData: body.clientData,
+          apiKey: env.ELEVENLABS_API_KEY,
+          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+        });
+        return json(200, call, { ...cors, "cache-control": "no-store" });
+      } catch (error) {
+        if (error instanceof TypeError) return json(400, { error: "invalid_request", message: error.message }, cors);
+        if (error instanceof ElevenLabsProviderError && error.status === 503) return json(503, { error: "telephony_not_configured", message: "Configure ElevenLabs telephony on the server." }, cors);
+        return json(502, { error: "telephony_provider_failed", message: "Telephony provider failed." }, cors);
+      }
     }
 
     if (request.method === "POST" && url.pathname === "/v1/voice/sample") {

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createHandler } from "../src/app.js";
 import { synthesizeSpeechWithOpenAI } from "../src/openai.js";
+import { registerTwilioCall, startTwilioCall } from "../src/elevenlabs.js";
+import { createHmac } from "node:crypto";
 
 const handler = createHandler({ NODE_ENV: "test" });
 
@@ -148,4 +150,105 @@ test("translation rejects an empty tone", async () => {
   }));
 
   assert.equal(response.status, 400);
+});
+
+test("signed Twilio webhook registers the call with ElevenLabs and returns TwiML", async () => {
+  const twiml = "<?xml version=\"1.0\"?><Response><Connect><Stream url=\"wss://example\"/></Connect></Response>";
+  let registration;
+  const webhookUrl = "https://example.test/v1/telephony/twilio/incoming";
+  const params = new URLSearchParams({ From: "+14155550100", To: "+14155550199", CallSid: "CA123" });
+  const signature = createHmac("sha1", "twilio-secret").update(`${webhookUrl}CallSidCA123From+14155550100To+14155550199`).digest("base64");
+  const telephonyHandler = createHandler(
+    {
+      NODE_ENV: "production",
+      ELEVENLABS_API_KEY: "eleven-key",
+      ELEVENLABS_AGENT_ID: "agent_123",
+      TWILIO_AUTH_TOKEN: "twilio-secret",
+      TWILIO_WEBHOOK_URL: webhookUrl
+    },
+    {
+      registerTwilioCall: async (options) => {
+        registration = options;
+        return twiml;
+      }
+    }
+  );
+
+  const response = await telephonyHandler(new Request(webhookUrl, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "x-twilio-signature": signature },
+    body: params
+  }));
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "application/xml; charset=utf-8");
+  assert.equal(await response.text(), twiml);
+  assert.deepEqual(registration, {
+    agentId: "agent_123",
+    fromNumber: "+14155550100",
+    toNumber: "+14155550199",
+    direction: "inbound",
+    apiKey: "eleven-key",
+    clientData: { dynamic_variables: { call_sid: "CA123" } }
+  });
+});
+
+test("Twilio webhook rejects an invalid signature", async () => {
+  const url = "https://example.test/v1/telephony/twilio/incoming";
+  const response = await createHandler({ NODE_ENV: "production", TWILIO_AUTH_TOKEN: "secret" })(new Request(url, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "x-twilio-signature": "bad" },
+    body: "From=%2B14155550100&To=%2B14155550199"
+  }));
+  assert.equal(response.status, 403);
+});
+
+test("outbound telephony requires its server token", async () => {
+  const url = "https://example.test/v1/telephony/twilio/outbound";
+  const response = await createHandler({ NODE_ENV: "production", TELEPHONY_OUTBOUND_TOKEN: "send-secret" })(new Request(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ toNumber: "+14155550100" })
+  }));
+  assert.equal(response.status, 401);
+});
+
+test("ElevenLabs Twilio adapters use the documented endpoints", async () => {
+  const requests = [];
+  const fetchImpl = async (url, options) => {
+    requests.push({ url, options });
+    return new Response(url.endsWith("register-call") ? "<Response/>" : JSON.stringify({ call_sid: "CA456" }), { status: 200 });
+  };
+  assert.equal(await registerTwilioCall({ agentId: "agent_123", fromNumber: "+14155550100", toNumber: "+14155550199", apiKey: "key", fetchImpl }), "<Response/>");
+  assert.deepEqual(await startTwilioCall({ agentId: "agent_123", agentPhoneNumberId: "phone_123", toNumber: "+14155550100", apiKey: "key", fetchImpl }), { call_sid: "CA456" });
+  assert.equal(requests[0].url, "https://api.elevenlabs.io/v1/convai/twilio/register-call");
+  assert.deepEqual(JSON.parse(requests[0].options.body), {
+    agent_id: "agent_123", from_number: "+14155550100", to_number: "+14155550199", direction: "inbound"
+  });
+  assert.equal(requests[1].url, "https://api.elevenlabs.io/v1/convai/twilio/outbound-call");
+});
+
+test("authenticated outbound telephony starts an ElevenLabs call", async () => {
+  let request;
+  const outboundHandler = createHandler(
+    {
+      NODE_ENV: "production",
+      TELEPHONY_OUTBOUND_TOKEN: "send-secret",
+      ELEVENLABS_API_KEY: "eleven-key",
+      ELEVENLABS_AGENT_ID: "agent_123",
+      ELEVENLABS_AGENT_PHONE_NUMBER_ID: "phone_123"
+    },
+    {
+      startTwilioCall: async (options) => { request = options; return { call_sid: "CA456" }; }
+    }
+  );
+  const response = await outboundHandler(new Request("https://example.test/v1/telephony/twilio/outbound", {
+    method: "POST",
+    headers: { authorization: "Bearer send-secret", "content-type": "application/json" },
+    body: JSON.stringify({ toNumber: "+14155550100", callRecordingEnabled: true })
+  }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { call_sid: "CA456" });
+  assert.equal(request.toNumber, "+14155550100");
+  assert.equal(request.callRecordingEnabled, true);
 });
