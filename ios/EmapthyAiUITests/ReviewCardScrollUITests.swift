@@ -203,6 +203,25 @@ final class CorporateRewriteAppStoreCaptureUITests: XCTestCase {
         )
         keepAppStoreScreenshot(of: app, named: "04-send-with-confidence")
         Thread.sleep(forTimeInterval: 1.5)
+
+        // Regression: accepting one rewrite must not make the next draft
+        // look empty to the keyboard's UITextDocumentProxy.
+        textField.tap()
+        textField.press(forDuration: 1.0)
+        let selectAllAfterSend = app.menuItems["Select All"].firstMatch
+        XCTAssertTrue(selectAllAfterSend.waitForExistence(timeout: 3), "Could not select the accepted rewrite")
+        selectAllAfterSend.tap()
+        textField.typeText(XCUIKeyboardKey.delete.rawValue)
+        let secondDraft = "this is a new message"
+        typeDraftOnLiveEmapthyAiKeyboard(secondDraft, in: app, textField: textField)
+        XCTAssertEqual((textField.value as? String)?.lowercased(), secondDraft)
+        app.buttons["rewriteButton"].tap()
+        XCTAssertTrue(
+            app.staticTexts["Reviewing…"].waitForExistence(timeout: 2)
+                || app.staticTexts["suggestionText"].waitForExistence(timeout: 2),
+            "Second Rewrite tap produced neither a reviewing state nor a suggestion"
+        )
+        XCTAssertTrue(app.staticTexts["suggestionText"].waitForExistence(timeout: 30), "Second rewrite did not produce a suggestion")
     }
 
     private func keepAppStoreScreenshot(of app: XCUIApplication, named name: String) {

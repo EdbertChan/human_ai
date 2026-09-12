@@ -14,6 +14,7 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
     // (nil = server default, corporate). Set on every submit before the flow
     // dispatch, read once by callRewriteAPI.
     private var pendingPersona: String?
+    private var rewriteSubmissionPending = false
     private let toolbarModel = EmapthyAiToolbarModel()
     // /v1/personas is loaded once per keyboard session; until it answers,
     // the model keeps its locked defaults (Corporate-only).
@@ -113,8 +114,17 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
                 self.updateKeyboardHeight(for: self.flowState.status)
             }
         toolbarModel.onSubmit = { [weak self] persona in
-            self?.pendingPersona = persona
-            self?.dispatch(ReviewFlow.Event(type: "SUBMIT_PRESSED"))
+            guard let self else { return }
+            guard !self.rewriteSubmissionPending, self.flowState.status == .idle else { return }
+            self.rewriteSubmissionPending = true
+            self.pendingPersona = persona
+            // UIKit can briefly report an empty document context while the
+            // keyboard toolbar is receiving the tap. Read after that focus
+            // transition instead of sampling the proxy in the same event.
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 120_000_000)
+                self?.dispatch(ReviewFlow.Event(type: "SUBMIT_PRESSED"))
+            }
         }
         toolbarModel.onPersonaTap = { [weak self] option in
             self?.sendProductEvent("persona_tapped", properties: [
@@ -297,8 +307,22 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
     // Treat both pieces as the draft; users can tap the toolbar with the
     // cursor anywhere in the message, not only at its end.
     private func currentDraft() -> String {
-        (textDocumentProxy.documentContextBeforeInput ?? "")
-            + (textDocumentProxy.documentContextAfterInput ?? "")
+        let before = textDocumentProxy.documentContextBeforeInput ?? ""
+        let after = textDocumentProxy.documentContextAfterInput ?? ""
+        // iOS can expose a stale/short context at the cursor even while the
+        // host field visibly contains more text. Read once at the end of the
+        // document, where the whole draft is in the preceding context, then
+        // restore the user's cursor position.
+        if !after.isEmpty {
+            textDocumentProxy.adjustTextPosition(byCharacterOffset: after.count)
+        }
+        let endContext = textDocumentProxy.documentContextBeforeInput ?? ""
+        if !after.isEmpty {
+            textDocumentProxy.adjustTextPosition(byCharacterOffset: -after.count)
+        }
+        let draft = endContext.count >= (before + after).count ? endContext : before + after
+        print("EMPATHY_DRAFT_READ before=\(before.count) after=\(after.count) end=\(endContext.count) total=\(draft.count) text=\(String(reflecting: draft))")
+        return draft
     }
 
     private func replaceCurrentDraft(with text: String) {
@@ -313,6 +337,7 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
         let original = currentDraft()
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard !original.isEmpty else {
+            rewriteSubmissionPending = false
             dispatch(ReviewFlow.Event(type: "REWRITE_FAILED", message: "Type a message first."))
             return
         }
@@ -347,9 +372,11 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
                     }
                 )
                 self.sendProductEvent("rewrite_succeeded", properties: ["persona_id": personaID, "context_included": !conversation.isEmpty])
+                self.rewriteSubmissionPending = false
                 self.dispatch(ReviewFlow.Event(type: "REWRITE_SUCCEEDED", result: result))
             } catch {
                 self.sendProductEvent("rewrite_failed", properties: ["persona_id": personaID])
+                self.rewriteSubmissionPending = false
                 self.dispatch(ReviewFlow.Event(type: "REWRITE_FAILED", message: self.describe(error)))
             }
         }
@@ -428,11 +455,12 @@ final class KeyboardViewController: KeyboardInputViewController, @MainActor AVAu
 
     private func speakCurrentDraft() {
         if voicePlayer?.isPlaying == true { voicePlayer?.stop(); toolbarModel.setSpeaking(false); return }
-        let text = currentDraft().trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { toolbarModel.setVoiceError("Type a message first."); return }
-        toolbarModel.setSpeaking(true)
         Task { @MainActor [weak self] in
             guard let self else { return }
+            try? await Task.sleep(nanoseconds: 120_000_000)
+            let text = self.currentDraft().trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else { self.toolbarModel.setVoiceError("Type a message first."); return }
+            self.toolbarModel.setSpeaking(true)
             do {
                 let result = try await RewriteAPI.speakText(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), text: text, persona: self.toolbarModel.voicePersonaID)
                 let session = AVAudioSession.sharedInstance()

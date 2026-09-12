@@ -9,6 +9,7 @@ struct EmapthyAiToolbarView: View {
                 if let acknowledged = model.requestAcknowledgedLabel { acknowledgementRow(acknowledged) }
                 else if let prompt = model.requestPrompt { requestRow(prompt) }
                 else if model.voiceTranscript != nil { voiceResultCard }
+                else if let error = model.voiceError { statusRow(text: error) }
                 else if let notice = model.state.notice { statusRow(text: notice) }
                 else { idleRow }
             case .rewriting:
