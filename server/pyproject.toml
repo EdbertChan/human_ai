@@ -1,0 +1,37 @@
+[project]
+name = "speech-service"
+version = "0.1.0"
+description = "Expressive ElevenLabs speech streaming service"
+requires-python = ">=3.12"
+dependencies = [
+    "anyio>=4.8",
+    "elevenlabs>=2.0",
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.28",
+    "httpx>=0.28",
+    "pytest>=8.3",
+    "ruff>=0.11",
+]
+
+[tool.basedpyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+include = ["speech_service", "tests"]
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers"]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["COM812", "D203", "D213"]
