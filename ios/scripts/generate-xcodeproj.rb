@@ -160,7 +160,7 @@ end
 # --- Per-target build settings ---
 app_target.build_configurations.each do |config|
   config.build_settings.merge!(common_build_settings(BUNDLE_ID))
-  config.build_settings["EMAPTHYAI_DEV_API_URL"] = "http://192.168.1.106:8787" if config.name == "Debug"
+  config.build_settings["EMAPTHYAI_DEV_API_URL"] = "http://127.0.0.1:18898" if config.name == "Debug"
   config.build_settings["INFOPLIST_FILE"] = "EmapthyAi/Info.plist"
   config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "EmapthyAi/EmapthyAi.entitlements"
   config.build_settings["ASSETCATALOG_COMPILER_APPICON_NAME"] = "AppIcon"
@@ -169,7 +169,7 @@ end
 
 keyboard_target.build_configurations.each do |config|
   config.build_settings.merge!(common_build_settings("#{BUNDLE_ID}.Keyboard"))
-  config.build_settings["EMAPTHYAI_DEV_API_URL"] = "http://192.168.1.106:8787" if config.name == "Debug"
+  config.build_settings["EMAPTHYAI_DEV_API_URL"] = "http://127.0.0.1:18898" if config.name == "Debug"
   config.build_settings["INFOPLIST_FILE"] = "EmapthyAiKeyboard/Info.plist"
   config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "EmapthyAiKeyboard/EmapthyAiKeyboard.entitlements"
   config.build_settings["SKIP_INSTALL"] = "YES"

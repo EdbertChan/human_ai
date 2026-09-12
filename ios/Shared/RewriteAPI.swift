@@ -36,14 +36,25 @@ struct VoiceRelayResult: Codable, Equatable {
 }
 
 enum RewriteAPI {
-    static func relayVoice(baseURL: String, token: String, distinctID: String, audio: Data, mimeType: String = "audio/mp4", persona: String = "corporate") async throws -> VoiceRelayResult {
+    static func relayVoice(baseURL: String, token: String, distinctID: String, audio: Data, mimeType: String = "audio/mp4", persona: String = "corporate", voiceID: String? = RewriteSettings.voiceID()) async throws -> VoiceRelayResult {
         var request = try makeRequest(baseURL: baseURL, path: "/v1/voice/relay", token: token)
         let boundary = "Boundary-\(UUID().uuidString)"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        request.httpBody = multipartBody(boundary: boundary, distinctID: distinctID, persona: persona, audio: audio, mimeType: mimeType)
+        request.httpBody = multipartBody(boundary: boundary, distinctID: distinctID, persona: persona, voiceID: voiceID, audio: audio, mimeType: mimeType)
         let (data, response) = try await URLSession.shared.data(for: request)
         try validate(response: response, data: data, failure: "Voice relay failed")
         return try JSONDecoder().decode(VoiceRelayResult.self, from: data)
+    }
+
+    static func createVoice(baseURL: String, token: String, distinctID: String, name: String, audio: Data, mimeType: String = "audio/mp4") async throws -> String {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/voice/sample", token: token)
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = voiceSampleBody(boundary: boundary, distinctID: distinctID, name: name, audio: audio, mimeType: mimeType)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response, data: data, failure: "Voice setup failed")
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any], let voiceID = json["voiceId"] as? String, !voiceID.isEmpty else { throw RewriteAPIError.invalidResponse }
+        return voiceID
     }
 
     static func rewrite(baseURL: String, token: String, text: String, persona: String? = nil, surface: String? = nil, distinctID: String? = nil, conversation: [String] = []) async throws -> RewriteResult {
@@ -177,11 +188,23 @@ enum RewriteAPI {
         return request
     }
 
-    private static func multipartBody(boundary: String, distinctID: String, persona: String, audio: Data, mimeType: String) -> Data {
+    private static func multipartBody(boundary: String, distinctID: String, persona: String, voiceID: String?, audio: Data, mimeType: String) -> Data {
         var body = Data()
         func append(_ string: String) { body.append(Data(string.utf8)) }
         append("--\(boundary)\r\nContent-Disposition: form-data; name=\"distinctId\"\r\n\r\n\(distinctID)\r\n")
         append("--\(boundary)\r\nContent-Disposition: form-data; name=\"persona\"\r\n\r\n\(persona)\r\n")
+        if let voiceID { append("--\(boundary)\r\nContent-Disposition: form-data; name=\"voiceId\"\r\n\r\n\(voiceID)\r\n") }
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"voice.m4a\"\r\nContent-Type: \(mimeType)\r\n\r\n")
+        body.append(audio)
+        append("\r\n--\(boundary)--\r\n")
+        return body
+    }
+
+    private static func voiceSampleBody(boundary: String, distinctID: String, name: String, audio: Data, mimeType: String) -> Data {
+        var body = Data()
+        func append(_ string: String) { body.append(Data(string.utf8)) }
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"distinctId\"\r\n\r\n\(distinctID)\r\n")
+        append("--\(boundary)\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\n\(name)\r\n")
         append("--\(boundary)\r\nContent-Disposition: form-data; name=\"audio\"; filename=\"voice.m4a\"\r\nContent-Type: \(mimeType)\r\n\r\n")
         body.append(audio)
         append("\r\n--\(boundary)--\r\n")

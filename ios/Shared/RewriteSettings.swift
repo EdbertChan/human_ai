@@ -17,6 +17,7 @@ enum RewriteSettings {
     private static let distinctIDKey = "distinct_id"
     private static let keyboardEnabledReportedKey = "keyboard_enabled_reported"
     private static let conversationContextEnabledKey = "conversation_context_enabled"
+    private static let voiceIDKey = "elevenlabs_voice_id"
     private static let accountSessionService = "ai.emapthyai.account-session"
 
     private static let processLocalDistinctID = UUID().uuidString.lowercased()
@@ -49,6 +50,15 @@ enum RewriteSettings {
         let fresh = UUID().uuidString.lowercased()
         defaults.set(fresh, forKey: distinctIDKey)
         return fresh
+    }
+
+    static func voiceID() -> String? {
+        guard let value = sharedDefaults?.string(forKey: voiceIDKey), !value.isEmpty else { return nil }
+        return value
+    }
+
+    static func saveVoiceID(_ voiceID: String) {
+        sharedDefaults?.set(voiceID, forKey: voiceIDKey)
     }
 
     static func accountSessionToken() -> String? {

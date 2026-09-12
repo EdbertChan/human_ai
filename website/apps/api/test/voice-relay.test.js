@@ -33,6 +33,27 @@ test("voice relay transforms and returns the requested persona", async () => {
   assert.deepEqual([...Buffer.from(body.audio, "base64")], [9, 8, 7]);
 });
 
+test("voice relay uses the cloned ElevenLabs voice and persona settings when configured", async () => {
+  let elevenRequest;
+  const elevenHandler = createHandler({ NODE_ENV: "test", OPENAI_API_KEY: "openai-test", ELEVENLABS_API_KEY: "eleven-test", ELEVENLABS_MODEL: "eleven_multilingual_v2" }, {
+    transcribeAudio: async () => "this is shit",
+    voiceRewrite: async () => ({ replacement: "corporate transformed voice" }),
+    synthesizeElevenLabs: async (options) => { elevenRequest = options; return { audio: new Uint8Array([5, 4, 3]), contentType: "audio/mpeg" }; }
+  });
+  const form = new FormData();
+  form.set("distinctId", "0123456789abcdef0123456789abcdef");
+  form.set("persona", "corporate");
+  form.set("voiceId", "cloned_voice_123");
+  form.set("audio", new File([new Uint8Array([1, 2])], "voice.m4a", { type: "audio/mp4" }));
+
+  const response = await elevenHandler(new Request("https://example.test/v1/voice/relay", { method: "POST", body: form }));
+  assert.equal(response.status, 200);
+  assert.equal(elevenRequest.voiceId, "cloned_voice_123");
+  assert.equal(elevenRequest.model, "eleven_multilingual_v2");
+  assert.equal(elevenRequest.voiceSettings.stability, 0.72);
+  assert.equal(elevenRequest.voiceSettings.style, 0.08);
+});
+
 test("voice relay transforms warm voice with the warm policy", async () => {
   const form = new FormData();
   form.set("distinctId", "0123456789abcdef0123456789abcdef");

@@ -19,6 +19,9 @@ function providerFailure(response) {
   if (response.status === 401 || response.status === 403) {
     return new ElevenLabsProviderError(response.status, "Voice cloning unavailable for this account.");
   }
+  if (response.status === 400) {
+    return new ElevenLabsProviderError(response.status, "ElevenLabs rejected the audio sample. Use a playable 10–30 second recording with clear speech.");
+  }
   return new ElevenLabsProviderError(response.status);
 }
 
@@ -41,12 +44,14 @@ export async function createVoice({ name, audio, mimeType = "audio/m4a", apiKey,
   return payload.voice_id;
 }
 
-export async function synthesizeSpeech({ voiceId = DEFAULT_VOICE_ID, text, apiKey, modelId, model, fetchImpl = fetch } = {}) {
+export async function synthesizeSpeech({ voiceId = DEFAULT_VOICE_ID, text, apiKey, modelId, model, voiceSettings, fetchImpl = fetch } = {}) {
   if (typeof voiceId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(voiceId)) throw new TypeError("voiceId is invalid.");
   if (typeof text !== "string" || !text.trim() || text.length > MAX_TEXT_LENGTH) throw new TypeError("text is required and bounded.");
   checkKey(apiKey);
   let response;
-  try { response = await fetchImpl(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}`, { method: "POST", headers: { "xi-api-key": apiKey, accept: "audio/mpeg", "content-type": "application/json" }, body: JSON.stringify({ text: text.trim(), model_id: model ?? modelId ?? "eleven_multilingual_v2" }) }); }
+  const body = { text: text.trim(), model_id: model ?? modelId ?? "eleven_multilingual_v2" };
+  if (voiceSettings) body.voice_settings = voiceSettings;
+  try { response = await fetchImpl(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}`, { method: "POST", headers: { "xi-api-key": apiKey, accept: "audio/mpeg", "content-type": "application/json" }, body: JSON.stringify(body) }); }
   catch { throw new ElevenLabsProviderError(502); }
   if (!response.ok) throw providerFailure(response);
   return { audio: await response.arrayBuffer(), contentType: response.headers?.get?.("content-type") || "audio/mpeg" };

@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 @MainActor
 final class SettingsViewController: UIViewController {
@@ -9,6 +10,9 @@ final class SettingsViewController: UIViewController {
     private var apiTokenField: UITextField?
     private var debugStatusLabel: UILabel?
     #endif
+    private var voiceRecorder: AVAudioRecorder?
+    private var voiceSampleButton: UIButton?
+    private var voiceStatusLabel: UILabel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +51,21 @@ final class SettingsViewController: UIViewController {
         )
         stack.addArrangedSubview(title)
         stack.addArrangedSubview(subtitle)
+        let voiceHeader = scaledLabel("Voice fingerprint", textStyle: .title2, size: 22, weight: .bold, color: EmpathyTokens.colorTextPrimary)
+        stack.addArrangedSubview(voiceHeader)
+        let voiceBody = scaledLabel("Record a short sample once. Your voice stays represented by an ElevenLabs voice ID; the audio is sent only to the configured local API for cloning.", textStyle: .body, size: 17, color: EmpathyTokens.colorTextPrimary)
+        stack.addArrangedSubview(voiceBody)
+        let sampleButton = UIButton(type: .system)
+        sampleButton.setTitle(RewriteSettings.voiceID() == nil ? "Record voice sample" : "Replace voice sample", for: .normal)
+        styleButton(sampleButton, background: EmpathyTokens.colorBrandPrimary, titleColor: .white)
+        sampleButton.accessibilityIdentifier = "voiceSampleButton"
+        sampleButton.addTarget(self, action: #selector(didTapVoiceSample), for: .touchUpInside)
+        voiceSampleButton = sampleButton
+        let status = scaledLabel(RewriteSettings.voiceID() == nil ? "No voice sample configured." : "Voice sample configured for local playback.", textStyle: .footnote, size: 15, color: EmpathyTokens.colorTextSecondary)
+        status.accessibilityIdentifier = "voiceSampleStatus"
+        voiceStatusLabel = status
+        stack.addArrangedSubview(sampleButton)
+        stack.addArrangedSubview(status)
         #if DEBUG
         let testLabel = UILabel(); testLabel.text = "Test area"; testLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         testTextView.font = .systemFont(ofSize: 15); testTextView.layer.borderColor = EmpathyTokens.colorBorder.cgColor; testTextView.layer.borderWidth = 1; testTextView.layer.cornerRadius = 8
@@ -147,6 +166,51 @@ final class SettingsViewController: UIViewController {
 
     private func styleButton(_ button: UIButton, background: UIColor, titleColor: UIColor) { button.setTitleColor(titleColor, for: .normal); button.backgroundColor = background; button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold); button.layer.cornerRadius = 10; button.heightAnchor.constraint(equalToConstant: 46).isActive = true }
     @objc private func didTapOpenSettings() { guard let url = URL(string: UIApplication.openSettingsURLString) else { return }; UIApplication.shared.open(url) }
+
+    @objc private func didTapVoiceSample() {
+        if voiceRecorder != nil { finishVoiceSample(); return }
+        AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
+            Task { @MainActor in
+                guard let self else { return }
+                guard granted else { self.voiceStatusLabel?.text = "Microphone permission is required."; return }
+                do {
+                    let session = AVAudioSession.sharedInstance()
+                    try session.setCategory(.record, mode: .measurement, options: [.allowBluetooth])
+                    try session.setActive(true)
+                    let url = FileManager.default.temporaryDirectory.appendingPathComponent("voice-sample-\(UUID().uuidString).m4a")
+                    self.voiceRecorder = try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44100, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue])
+                    self.voiceRecorder?.record()
+                    self.voiceSampleButton?.setTitle("Stop recording", for: .normal)
+                    self.voiceStatusLabel?.text = "Recording… speak naturally for 10–30 seconds, then tap Stop recording."
+                } catch { self.voiceStatusLabel?.text = "Could not start recording." }
+            }
+        }
+    }
+
+    private func finishVoiceSample() {
+        guard let recorder = voiceRecorder else { return }
+        recorder.stop(); voiceRecorder = nil
+        voiceSampleButton?.isEnabled = false
+        voiceSampleButton?.setTitle("Creating voice…", for: .normal)
+        voiceStatusLabel?.text = "Uploading the sample to the local API…"
+        let url = recorder.url
+        Task { @MainActor in
+            defer { try? FileManager.default.removeItem(at: url); voiceSampleButton?.isEnabled = true }
+            do {
+                let audio = try Data(contentsOf: url)
+                let voiceID = try await RewriteAPI.createVoice(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), name: "EmapthyAi local voice", audio: audio)
+                RewriteSettings.saveVoiceID(voiceID)
+                voiceSampleButton?.setTitle("Replace voice sample", for: .normal)
+                voiceStatusLabel?.text = "Voice sample configured. Voice playback will use your voice."
+            } catch {
+                voiceSampleButton?.setTitle("Record voice sample", for: .normal)
+                let detail: String
+                if case let RewriteAPIError.server(message) = error { detail = message }
+                else { detail = error.localizedDescription }
+                voiceStatusLabel?.text = "Voice setup failed: \(detail)"
+            }
+        }
+    }
 
     #if DEBUG
     private func buildDebugSection() -> UIView { let section = UIStackView(); section.axis = .vertical; section.spacing = 10; let label = UILabel(); label.text = "Debug server settings"; label.font = .systemFont(ofSize: 18, weight: .semibold); let urlField = UITextField(); urlField.borderStyle = .roundedRect; urlField.placeholder = "API URL"; urlField.text = RewriteSettings.apiURL(); urlField.autocapitalizationType = .none; urlField.keyboardType = .URL; let tokenField = UITextField(); tokenField.borderStyle = .roundedRect; tokenField.placeholder = "API token (optional locally)"; tokenField.text = RewriteSettings.apiToken(); tokenField.autocapitalizationType = .none; tokenField.isSecureTextEntry = true; let saveButton = UIButton(type: .system); saveButton.setTitle("Save server settings", for: .normal); styleButton(saveButton, background: .systemGray5, titleColor: EmpathyTokens.colorTextPrimary); saveButton.addTarget(self, action: #selector(didTapSave), for: .touchUpInside); let status = UILabel(); status.font = .systemFont(ofSize: 13); status.textColor = EmpathyTokens.colorTextSecondary; apiURLField = urlField; apiTokenField = tokenField; debugStatusLabel = status; [label, urlField, tokenField, saveButton, status].forEach { section.addArrangedSubview($0) }; return section }

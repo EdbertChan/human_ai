@@ -3,7 +3,7 @@ import { rewriteWithOpenAI, synthesizeSpeechWithOpenAI, transcribeAudio } from "
 import { rewriteWithAnthropic, rewriteWithAnthropicStream } from "./anthropic.js";
 import { rewriteWithClaudeCode } from "./claude-code.js";
 import { searchExa, ExaProviderError } from "./exa.js";
-import { createVoice, ElevenLabsProviderError } from "./elevenlabs.js";
+import { createVoice, synthesizeSpeech as synthesizeWithElevenLabs, ElevenLabsProviderError } from "./elevenlabs.js";
 import { PERSONAS, personaOptions, resolvePersona } from "./personas.js";
 import {
   DurableConfigError,
@@ -42,6 +42,13 @@ function json(status, body, extraHeaders = {}) {
 // it never removes a supported product surface.
 const PRODUCT_ORIGINS = ["https://app.slack.com", "https://chat.google.com"];
 const DEVELOPMENT_ORIGIN = "http://localhost:3000";
+
+const ELEVENLABS_PERSONA_SETTINGS = {
+  corporate: { stability: 0.72, similarity_boost: 0.86, style: 0.08, use_speaker_boost: true },
+  personable: { stability: 0.5, similarity_boost: 0.86, style: 0.28, use_speaker_boost: true },
+  warm: { stability: 0.44, similarity_boost: 0.86, style: 0.32, use_speaker_boost: true },
+  empathy: { stability: 0.4, similarity_boost: 0.86, style: 0.36, use_speaker_boost: true }
+};
 
 function allowedOrigins(env) {
   const configured = (env.ALLOWED_ORIGINS ?? "").split(",").map((item) => item.trim()).filter(Boolean);
@@ -352,7 +359,7 @@ export function createHandler(env = process.env, dependencies = {}) {
         if (error instanceof TypeError) return json(400, { error: "invalid_request", message: error.message }, cors);
         if (error instanceof ElevenLabsProviderError && error.status === 503) return json(503, { error: "voice_not_configured", message: "Configure ElevenLabs on the server." }, cors);
         if (error instanceof ElevenLabsProviderError && (error.status === 401 || error.status === 403)) return json(502, { error: "voice_not_available", message: "Voice cloning unavailable for this account." }, cors);
-        return json(502, { error: "voice_provider_failed", message: "Voice provider failed." }, cors);
+        return json(502, { error: "voice_provider_failed", message: env.NODE_ENV === "production" ? "Voice provider failed." : (error.message || "Voice provider failed.") }, cors);
       }
     }
 
@@ -361,9 +368,13 @@ export function createHandler(env = process.env, dependencies = {}) {
       try { form = await request.formData(); } catch { return json(400, { error: "invalid_multipart" }, cors); }
       const persona = form.get("persona");
       const distinctId = form.get("distinctId");
+      const voiceId = form.get("voiceId");
       const audio = form.get("audio");
       if (!PERSONAS[persona] || !isValidDistinctId(distinctId) || !(audio instanceof File)) {
         return json(400, { error: "invalid_request", message: "distinctId, supported persona, and audio are required." }, cors);
+      }
+      if (voiceId !== null && (typeof voiceId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(voiceId))) {
+        return json(400, { error: "invalid_request", message: "voiceId is invalid." }, cors);
       }
       const authorizationError = await authorizePersona(request, distinctId, persona);
       if (authorizationError) return json(authorizationError.status, { error: authorizationError.error, message: authorizationError.message }, cors);
@@ -399,14 +410,26 @@ export function createHandler(env = process.env, dependencies = {}) {
           warm: "Speak with a positive, encouraging, reassuring, human tone.",
           empathy: "Speak kindly and compassionately, as someone who genuinely cares."
         }[persona] ?? "Speak clearly and naturally.";
-        const spoken = await synthesize({
-          text: rewritten.replacement,
-          tone,
-          voice: env.OPENAI_TTS_VOICE ?? "coral",
-          apiKey: env.OPENAI_API_KEY,
-          model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts",
-          ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
-        });
+        const clonedVoiceId = typeof voiceId === "string" && voiceId.trim()
+          ? voiceId.trim()
+          : env.ELEVENLABS_VOICE_ID;
+        const spoken = env.ELEVENLABS_API_KEY && clonedVoiceId
+          ? await (dependencies.synthesizeElevenLabs ?? synthesizeWithElevenLabs)({
+            voiceId: clonedVoiceId,
+            text: rewritten.replacement,
+            model: env.ELEVENLABS_MODEL ?? "eleven_multilingual_v2",
+            voiceSettings: ELEVENLABS_PERSONA_SETTINGS[persona],
+            apiKey: env.ELEVENLABS_API_KEY,
+            ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+          })
+          : await synthesize({
+            text: rewritten.replacement,
+            tone,
+            voice: env.OPENAI_TTS_VOICE ?? "coral",
+            apiKey: env.OPENAI_API_KEY,
+            model: env.OPENAI_TTS_MODEL ?? "gpt-4o-mini-tts",
+            ...(dependencies.fetchImpl ? { fetchImpl: dependencies.fetchImpl } : {})
+          });
         return json(200, {
           persona,
           transcript,
