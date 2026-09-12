@@ -1,0 +1,61 @@
+import Foundation
+import Combine
+
+@MainActor
+final class EmapthyAiToolbarModel: ObservableObject {
+    @Published private(set) var state = ReviewFlow.createFlow()
+    @Published var hasFullAccess = false
+    // The server is the only source of persona availability. Empty is the
+    // fail-closed state while loading or after a failed configuration request.
+    @Published private(set) var personas: [PersonaOption] = []
+    @Published private(set) var personasLoading = false
+    @Published private(set) var personasError: String?
+    @Published private(set) var requestPrompt: PersonaOption?
+    @Published private(set) var requestAcknowledgedLabel: String?
+    @Published var conversationContextEnabled: Bool = RewriteSettings.conversationContextEnabled()
+
+    var onSubmit: ((String?) -> Void)?
+    var onAccept: (() -> Void)?
+    var onKeepOriginal: (() -> Void)?
+    var onPersonaTap: ((PersonaOption) -> Void)?
+    var onPersonaRequest: ((String) -> Void)?
+
+    func update(_ newState: ReviewFlow.State) { state = newState }
+    func beginPersonaLoad() { personasLoading = true; personasError = nil; personas = [] }
+    func applyPersonaConfig(_ config: PersonaConfig) {
+        personasLoading = false
+        personasError = nil
+        personas = config.personas
+    }
+    func failPersonaLoad(_ message: String) {
+        personasLoading = false
+        personasError = message
+        personas = []
+        requestPrompt = nil
+    }
+    func personaTapped(_ option: PersonaOption) {
+        guard personas.contains(where: { $0.id == option.id && $0.available == option.available }) else { return }
+        onPersonaTap?(option)
+        if option.available {
+            onSubmit?(option.id)
+        } else if option.requestable {
+            requestAcknowledgedLabel = nil
+            requestPrompt = option
+        }
+    }
+    func toggleConversationContext() {
+        conversationContextEnabled.toggle()
+        RewriteSettings.saveConversationContextEnabled(conversationContextEnabled)
+    }
+    func confirmPersonaRequest() {
+        guard let option = requestPrompt, option.requestable, !option.available else { return }
+        requestPrompt = nil
+        onPersonaRequest?(option.id)
+        requestAcknowledgedLabel = option.label
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 2_500_000_000)
+            if self?.requestAcknowledgedLabel == option.label { self?.requestAcknowledgedLabel = nil }
+        }
+    }
+    func dismissPersonaRequest() { requestPrompt = nil }
+}

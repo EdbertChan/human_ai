@@ -1,0 +1,152 @@
+import Foundation
+
+enum RewriteAPIError: Error {
+    case invalidResponse
+    case server(String)
+}
+
+
+struct PersonaOption: Codable, Equatable {
+    let id: String
+    let label: String
+    let available: Bool
+    let requestable: Bool
+}
+
+struct PersonaConfig: Codable, Equatable {
+    let personas: [PersonaOption]
+    let variant: String
+}
+
+enum RewriteAPI {
+    static func rewrite(baseURL: String, token: String, text: String, persona: String? = nil, surface: String? = nil, distinctID: String? = nil, conversation: [String] = []) async throws -> RewriteResult {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/rewrite", token: token)
+        var body: [String: Any] = ["text": text]
+        if let persona { body["persona"] = persona }
+        if let surface {
+            var context: [String: Any] = ["surface": surface]
+            if !conversation.isEmpty { context["conversation"] = conversation }
+            body["context"] = context
+        }
+        if let distinctID { body["distinctId"] = distinctID }
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response, data: data, failure: "Rewrite failed")
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let original = json["original"] as? String,
+              let replacement = json["replacement"] as? String,
+              let acceptable = json["acceptable"] as? Bool else { throw RewriteAPIError.invalidResponse }
+        return RewriteResult(original: original, replacement: replacement, acceptable: acceptable, policyVersion: json["policyVersion"] as? String)
+    }
+
+    static func rewriteStreaming(baseURL: String, token: String, text: String, persona: String? = nil, surface: String? = nil, distinctID: String? = nil, conversation: [String] = [], onPreview: @escaping @Sendable (String) -> Void, onPreviewRevoked: @escaping @Sendable () -> Void) async throws -> RewriteResult {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/rewrite/stream", token: token)
+        request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 30
+        var body: [String: Any] = ["text": text]
+        if let persona { body["persona"] = persona }
+        if let surface {
+            var context: [String: Any] = ["surface": surface]
+            if !conversation.isEmpty { context["conversation"] = conversation }
+            body["context"] = context
+        }
+        if let distinctID { body["distinctId"] = distinctID }
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (stream, response) = try await URLSession.shared.bytes(for: request)
+        guard let http = response as? HTTPURLResponse else { throw RewriteAPIError.invalidResponse }
+        guard (200..<300).contains(http.statusCode) else {
+            if http.statusCode == 401 { RewriteSettings.clearAccountSession() }
+            throw RewriteAPIError.server("Rewrite failed (\(http.statusCode))")
+        }
+
+        var eventName: String?
+        var payload: String?
+        var finished: RewriteResult?
+        var failure: String?
+
+        func consumeFrame() {
+            defer { eventName = nil; payload = nil }
+            guard let eventName, let payload, let data = payload.data(using: .utf8) else { return }
+            let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+            switch eventName {
+            case "partial":
+                if let preview = json?["replacement"] as? String { onPreview(preview) }
+            case "revoke":
+                onPreviewRevoked()
+            case "done":
+                guard let json,
+                      let original = json["original"] as? String,
+                      let replacement = json["replacement"] as? String,
+                      let acceptable = json["acceptable"] as? Bool else { return }
+                finished = RewriteResult(original: original, replacement: replacement, acceptable: acceptable, policyVersion: json["policyVersion"] as? String)
+            case "error":
+                failure = (json?["message"] as? String) ?? "Rewrite failed."
+            default:
+                break
+            }
+        }
+
+        for try await line in stream.lines {
+            if line.isEmpty { consumeFrame(); continue }
+            if line.hasPrefix("event: ") { eventName = String(line.dropFirst(7)); continue }
+            if line.hasPrefix("data: ") { payload = String(line.dropFirst(6)) }
+        }
+        consumeFrame()
+
+        if let failure { throw RewriteAPIError.server(failure) }
+        guard let finished else { throw RewriteAPIError.invalidResponse }
+        return finished
+    }
+
+    static func fetchPersonas(baseURL: String, distinctID: String, token: String? = nil) async throws -> PersonaConfig {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/personas", token: token ?? RewriteSettings.accountSessionToken() ?? "")
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["distinctId": distinctID])
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response, data: data, failure: "Persona config failed")
+        guard let config = try? JSONDecoder().decode(PersonaConfig.self, from: data) else { throw RewriteAPIError.invalidResponse }
+        return config
+    }
+    static func bindDevice(baseURL: String, token: String, distinctID: String) async throws {
+        var request = try makeRequest(baseURL: baseURL, path: "/v1/account/devices", token: token)
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["distinctId": distinctID])
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validate(response: response, data: data, failure: "Account linking failed")
+    }
+
+    static func sendEvent(baseURL: String, distinctID: String, name: String, properties: [String: Any] = [:]) {
+        guard var request = try? makeRequest(baseURL: baseURL, path: "/v1/events", token: "") else { return }
+        var body: [String: Any] = ["distinctId": distinctID, "name": name]
+        var safe: [String: Any] = [:]
+        for (key, value) in properties {
+            switch value {
+            case let value as String: safe[key] = value
+            case let value as Bool: safe[key] = value
+            case let value as Double: safe[key] = value
+            default: continue
+            }
+        }
+        if !safe.isEmpty { body["properties"] = safe }
+        guard let payload = try? JSONSerialization.data(withJSONObject: body) else { return }
+        request.httpBody = payload; request.timeoutInterval = 10
+        Task.detached(priority: .utility) { _ = try? await URLSession.shared.data(for: request) }
+    }
+
+    private static func validate(response: URLResponse, data: Data, failure: String) throws {
+        guard let http = response as? HTTPURLResponse else { throw RewriteAPIError.invalidResponse }
+        guard (200..<300).contains(http.statusCode) else {
+            if http.statusCode == 401 { RewriteSettings.clearAccountSession() }
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+            throw RewriteAPIError.server(json?["message"] as? String ?? "\(failure) (\(http.statusCode))")
+        }
+    }
+
+    private static func makeRequest(baseURL: String, path: String, token: String) throws -> URLRequest {
+        var trimmed = baseURL; while trimmed.hasSuffix("/") { trimmed.removeLast() }
+        guard let url = URL(string: trimmed + path) else { throw RewriteAPIError.invalidResponse }
+        var request = URLRequest(url: url); request.httpMethod = "POST"; request.timeoutInterval = 20
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if !token.isEmpty { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
+        return request
+    }
+}

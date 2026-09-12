@@ -1,0 +1,361 @@
+import Combine
+import UIKit
+import os.log
+import KeyboardKitPro
+
+// Built on KeyboardKit Pro instead of a hand-rolled UIStackView keyboard —
+// same approach Grammarly/SwiftKey/Wordtune use, since iOS gives no way to
+// add a bar on top of Apple's own keyboard. KeyboardKit renders the real
+// key layout and Pro autocomplete; EmapthyAiCustomKeyboardView adds our
+// rewrite bar above KeyboardKit's own toolbar rather than replacing it.
+final class KeyboardViewController: KeyboardInputViewController {
+    private var flowState = ReviewFlow.createFlow()
+    private var pendingResult: RewriteResult?
+    // Persona chosen by the toolbar button that started the current rewrite
+    // (nil = server default, corporate). Set on every submit before the flow
+    // dispatch, read once by callRewriteAPI.
+    private var pendingPersona: String?
+    private let toolbarModel = EmapthyAiToolbarModel()
+    // /v1/personas is loaded once per keyboard session; until it answers,
+    // the model keeps its locked defaults (Corporate-only).
+    private var personaConfigLoaded = false
+
+    // Only used by EmapthyAiLayoutTests to know when the async KeyboardKit
+    // Pro setup (network license check) has actually finished, since a
+    // snapshot taken before that races the real render.
+    var setupCompletionForTesting: ((Result<License, Error>) -> Void)?
+
+    // iOS gives a custom keyboard extension a default height (~216pt) sized
+    // for a plain key layout. Our review card (status text + label +
+    // suggestion + Accept/Keep row) needs more than that on top of
+    // KeyboardKit's own key rows — without requesting extra height, the
+    // system compresses our content instead of the keys, which is what
+    // caused it to visibly collapse until scrolled.
+    //
+    // The height need is NOT the same across states: idle (just the
+    // "Rewrite with EmapthyAi" pill) needs far less than reviewing (status
+    // text + label + a 70pt-tall suggestion ScrollView + Accept/Keep row).
+    // A single fixed height sized for the taller reviewing state left a
+    // real, measured ~73pt of dead gray space below the keys in the far
+    // more common idle state — confirmed via EmapthyAiUITests.
+    // RealKeyboardHeightGapUITest, which switches to the real, live
+    // extension (not a test stand-in) and measures the actual system-hosted
+    // frame. The height is now updated live via updateKeyboardHeight(for:)
+    // whenever the toolbar's status changes, instead of picking one fixed
+    // value that's wrong for every state but one.
+    // 332 = measured live via EmapthyAiUITests.RealKeyboardIdleClipUITest
+    // against the real system-hosted extension: the idle persona row needs
+    // 57pt (37pt buttons + 12pt row padding + 8pt body padding) and
+    // KeyboardKit's key area (4 rows + its own toolbar + 4pt stack spacing)
+    // measured 275pt. At the old 318 the button tops sat 2.7pt from the
+    // keyboard's top edge (should be ~10pt) — the visible "buttons cut off
+    // flat" — while the keys were already flush at the bottom (gap 0). If
+    // KeyboardKit's row pitch drifts again (54 <-> 56pt has happened),
+    // re-run that UI test and retune ALL height constants together.
+    private static let compactKeyboardHeight: CGFloat = 332
+    // Expanded height verified against the real device via
+    // EmapthyAiUITests.ReviewCardScrollUITests, which drives a real swipe
+    // inside the actual KeyboardView hierarchy (not just an isolated
+    // toolbar) and asserts the scroll view reaches its full 70pt and the
+    // content actually moves — a static height/layout check alone can't
+    // catch this, since the ScrollView still renders fine at the wrong size.
+    // 451 = the 437 derived after removing the instruction line, plus the
+    // same +14pt KeyboardKit key-area growth the idle measurement exposed
+    // (see compactKeyboardHeight); RealKeyboardHeightGapUITest asserts the
+    // suggestion ScrollView still reaches its full 70pt live.
+    private static let expandedKeyboardHeight: CGFloat = 451
+    static let keyboardHeightForTesting = expandedKeyboardHeight
+    // Initial pinned height before any state transition — what a freshly
+    // loaded controller's constraint must equal (heights are dynamic; the
+    // expanded value is only reached when the flow enters reviewing).
+    static let initialKeyboardHeightForTesting = compactKeyboardHeight
+    // The locked-persona request prompt (and its transient confirmation)
+    // render as a card taller than the idle pill row; without extra height
+    // the card's top edge gets clipped flat against the container. Measured
+    // against the idle row via ToolbarRequestPromptSnapshotTests.
+    private static let promptExtraHeight: CGFloat = 14
+    // The "already corporate/empathetic" notice line only exists when the
+    // draft was acceptable; the reviewing height tracks that so the common
+    // no-notice card doesn't leave dead gray space below the keys.
+    private static let acceptableNoticeHeight: CGFloat = 27
+
+    private var heightConstraint: NSLayoutConstraint?
+    private var promptCancellable: AnyCancellable?
+    private var promptVisible = false
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Before setup(for:): Pro's license setup pushes the unlocked
+        // autocomplete service into whatever StandardActionHandler subclass
+        // is installed at that point (Keyboard.Services.autocompleteService
+        // didSet), so the revert handler must already be in place.
+        services.actionHandler = EmapthyAiActionHandler(controller: self)
+        wireActionHandlerTrace()
+        // The prompt/confirmation cards live in the toolbar model, outside
+        // the ReviewFlow status that normally drives height — observe them
+        // so the keyboard grows while one is on screen.
+        promptCancellable = toolbarModel.$requestPrompt
+            .combineLatest(toolbarModel.$requestAcknowledgedLabel)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] prompt, acknowledged in
+                guard let self else { return }
+                self.promptVisible = prompt != nil || acknowledged != nil
+                self.updateKeyboardHeight(for: self.flowState.status)
+            }
+        toolbarModel.onSubmit = { [weak self] persona in
+            self?.pendingPersona = persona
+            self?.dispatch(ReviewFlow.Event(type: "SUBMIT_PRESSED"))
+        }
+        toolbarModel.onPersonaTap = { [weak self] option in
+            self?.sendProductEvent("persona_tapped", properties: [
+                "persona_id": option.id,
+                "available": option.available
+            ])
+        }
+        toolbarModel.onPersonaRequest = { [weak self] personaID in
+            self?.sendProductEvent("persona_requested", properties: ["persona_id": personaID])
+        }
+        toolbarModel.onAccept = { [weak self] in
+            self?.sendProductEvent("rewrite_sent", properties: ["persona_id": self?.pendingPersona ?? "corporate"])
+            self?.dispatch(ReviewFlow.Event(type: "ACCEPT_PRESSED"))
+        }
+        toolbarModel.onKeepOriginal = { [weak self] in
+            self?.sendProductEvent("rewrite_cancelled", properties: ["persona_id": self?.pendingPersona ?? "corporate"])
+            self?.dispatch(ReviewFlow.Event(type: "KEEP_ORIGINAL_PRESSED"))
+        }
+        sendProductEvent("keyboard_session_started")
+        loadPersonaConfig()
+        // hasFullAccess defaults to false and the idle button's text/width
+        // depends on it ("Rewrite with EmapthyAi" vs "Enable Full Access in
+        // Settings", different lengths). Reading the real value here, before
+        // setup(for:) composes the SwiftUI content below, means the toolbar
+        // is never first drawn with the wrong default and then visibly
+        // resized once corrected — hasFullAccess is a system permission
+        // flag, available immediately, not gated on the async license setup.
+        refreshFullAccess()
+        // So EmapthyAiUITests can find and measure the real, extension-hosted
+        // view (not a test stand-in) once it's actually showing as a live
+        // system keyboard.
+        view.accessibilityIdentifier = "realKeyboardRoot"
+        inputView?.allowsSelfSizing = true
+        let heightConstraint = view.heightAnchor.constraint(equalToConstant: Self.compactKeyboardHeight)
+        // Was priority 999 ("one below required") from an earlier, smaller
+        // keyboard, to avoid fighting iOS's own required-priority height
+        // constraint when our request was TOO SMALL. That reasoning doesn't
+        // hold now that our request is larger — a soft priority means iOS
+        // can silently grant MORE than we asked for, leaving unfilled space
+        // below our content (reported as "huge gap below the keys"). Making
+        // it required forces our exact value; if iOS truly has a competing
+        // required constraint, Auto Layout logs a break instead of silently
+        // overriding us, which is diagnosable.
+        heightConstraint.priority = .required
+        heightConstraint.isActive = true
+        self.heightConstraint = heightConstraint
+        setup(for: .emapthyAi) { [weak self] result in
+            if case .failure(let error) = result {
+                // A failed license validation is otherwise invisible: the
+                // keyboard still types, but KeyboardKit leaves autocomplete
+                // and autocorrect on the disabled service.
+                os_log(.error, "KeyboardKit Pro setup failed; autocomplete/autocorrect stay disabled: %{public}@", String(describing: error))
+            }
+            if let self {
+                // Pro's license registration can swap services after this
+                // async setup; if the revert handler was evicted, put it
+                // back — the fresh instance picks up the now-unlocked Pro
+                // autocomplete service from services at init.
+                if !(self.services.actionHandler is EmapthyAiActionHandler) {
+                    self.services.actionHandler = EmapthyAiActionHandler(controller: self)
+                    self.wireActionHandlerTrace()
+                }
+                #if DEBUG
+                // Read by RealKeyboardAutocorrectUITest to report which
+                // action handler is actually live on-device.
+                self.view.accessibilityValue = "handler=\(type(of: self.services.actionHandler))"
+                #endif
+            }
+            self?.refreshFullAccess()
+            self?.setupCompletionForTesting?(result)
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshFullAccess()
+    }
+
+    private func wireActionHandlerTrace() {
+        #if DEBUG
+        // Read by RealKeyboardAutocorrectUITest through the accessibility
+        // tree — a keyboard extension has no other test-observable channel.
+        (services.actionHandler as? EmapthyAiActionHandler)?.debugTrace = { [weak self] message in
+            self?.view.accessibilityValue = "trace=\(message)"
+        }
+        #endif
+    }
+
+    override func viewWillSetupKeyboardView() {
+        setupKeyboardView { [unowned self] controller in
+            EmapthyAiCustomKeyboardView(
+                controller: controller,
+                toolbarModel: self.toolbarModel,
+                keyboardContext: controller.state.keyboardContext
+            )
+        }
+    }
+
+    private func refreshFullAccess() {
+        let fullAccess = hasFullAccess
+        toolbarModel.hasFullAccess = fullAccess
+        // keyboard_enabled fires once per install (shared App Group dedupe
+        // with the container app), the first time Full Access is observed.
+        if fullAccess && RewriteSettings.markKeyboardEnabledReported() {
+            sendProductEvent("keyboard_enabled")
+        }
+    }
+
+    private func loadPersonaConfig() {
+        guard !personaConfigLoaded else { return }
+        personaConfigLoaded = true
+        toolbarModel.beginPersonaLoad()
+        let baseURL = RewriteSettings.apiURL()
+        let distinctID = RewriteSettings.distinctID()
+        Task { @MainActor [weak self] in
+            do {
+                let config = try await RewriteAPI.fetchPersonas(baseURL: baseURL, distinctID: distinctID)
+                self?.toolbarModel.applyPersonaConfig(config)
+            } catch {
+                // A failed config load is otherwise invisible: the toolbar
+                // silently keeps the locked defaults, so log the reason.
+                os_log(.error, "Persona config load failed; keeping locked defaults: %{public}@", String(describing: error))
+                self?.toolbarModel.failPersonaLoad("Persona config unavailable")
+            }
+        }
+    }
+
+    // Fire-and-forget product telemetry with the shared anonymous identity.
+    // Only bounded ids/flags are ever attached — never draft text.
+    private func sendProductEvent(_ name: String, properties: [String: Any] = [:]) {
+        RewriteAPI.sendEvent(
+            baseURL: RewriteSettings.apiURL(),
+            distinctID: RewriteSettings.distinctID(),
+            name: name,
+            properties: properties
+        )
+    }
+
+    // MARK: - Same dispatch/runAction shape as every other EmapthyAi surface,
+    // sharing review-flow.js's spec (mirrored in ReviewFlow.swift/.java)
+
+    private func dispatch(_ event: ReviewFlow.Event) {
+        let transition = ReviewFlow.transition(flowState, event)
+        flowState = transition.state
+        toolbarModel.update(flowState)
+        updateKeyboardHeight(for: flowState.status)
+        for action in transition.actions {
+            runAction(action)
+        }
+    }
+
+    private func updateKeyboardHeight(for status: ReviewFlow.Status) {
+        let target: CGFloat
+        switch status {
+        case .idle, .rewriting:
+            target = Self.compactKeyboardHeight + (promptVisible ? Self.promptExtraHeight : 0)
+        case .reviewing, .sending:
+            target = Self.expandedKeyboardHeight
+                + (flowState.result?.acceptable == true ? Self.acceptableNoticeHeight : 0)
+        }
+        guard heightConstraint?.constant != target else { return }
+        heightConstraint?.constant = target
+        UIView.animate(withDuration: 0.2) {
+            self.view.superview?.layoutIfNeeded()
+        }
+    }
+
+    private func runAction(_ action: String) {
+        switch action {
+        case "CALL_REWRITE_API":
+            callRewriteAPI()
+        case "REPLACE_DRAFT":
+            pendingResult = flowState.result
+        case "SEND_DRAFT":
+            sendDraft()
+        case "CLOSE_PREVIEW":
+            pendingResult = nil
+        default:
+            break
+        }
+    }
+
+    // UITextDocumentProxy only ever exposes text immediately around the
+    // cursor (documentContextBeforeInput / -AfterInput), not the whole
+    // field the way Android's getExtractedText was — and only the "before"
+    // half can be removed via deleteBackward(). Reading and writing both
+    // use documentContextBeforeInput alone so the two stay consistent:
+    // reviewing "everything after" would let the replace silently duplicate
+    // or leave behind text the read included but the write couldn't clear.
+    private func callRewriteAPI() {
+        let original = (textDocumentProxy.documentContextBeforeInput ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !original.isEmpty else {
+            dispatch(ReviewFlow.Event(type: "REWRITE_FAILED", message: "Type a message first."))
+            return
+        }
+        let conversation: [String]
+        if toolbarModel.conversationContextEnabled {
+            let after = (textDocumentProxy.documentContextAfterInput ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            conversation = [after].filter { !$0.isEmpty }.map { String($0.prefix(500)) }
+        } else {
+            conversation = []
+        }
+        let apiURL = RewriteSettings.apiURL()
+        let token = RewriteSettings.apiToken()
+        let distinctID = RewriteSettings.distinctID()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            let personaID = self.pendingPersona ?? "corporate"
+            do {
+                let result = try await RewriteAPI.rewriteStreaming(
+                    baseURL: apiURL,
+                    token: token,
+                    text: original,
+                    persona: self.pendingPersona,
+                    surface: "ios_keyboard",
+                    distinctID: distinctID,
+                    conversation: conversation,
+                    onPreview: { [weak self] preview in
+                        Task { @MainActor in self?.dispatch(ReviewFlow.Event(type: "REWRITE_PROGRESS", preview: preview)) }
+                    },
+                    onPreviewRevoked: { [weak self] in
+                        Task { @MainActor in self?.dispatch(ReviewFlow.Event(type: "REWRITE_PREVIEW_REVOKED")) }
+                    }
+                )
+                self.sendProductEvent("rewrite_succeeded", properties: ["persona_id": personaID, "context_included": !conversation.isEmpty])
+                self.dispatch(ReviewFlow.Event(type: "REWRITE_SUCCEEDED", result: result))
+            } catch {
+                self.sendProductEvent("rewrite_failed", properties: ["persona_id": personaID])
+                self.dispatch(ReviewFlow.Event(type: "REWRITE_FAILED", message: self.describe(error)))
+            }
+        }
+    }
+
+    private func describe(_ error: Error) -> String {
+        if case RewriteAPIError.server(let message) = error { return message }
+        return error.localizedDescription
+    }
+
+
+    private func sendDraft() {
+        guard let result = pendingResult else {
+            dispatch(ReviewFlow.Event(type: "SEND_FAILED", message: "The text field is no longer active."))
+            return
+        }
+        let before = textDocumentProxy.documentContextBeforeInput ?? ""
+        for _ in before {
+            textDocumentProxy.deleteBackward()
+        }
+        textDocumentProxy.insertText(result.replacement)
+        dispatch(ReviewFlow.Event(type: "SEND_SUCCEEDED"))
+    }
+}

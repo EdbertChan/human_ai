@@ -1,0 +1,23 @@
+{
+  "name": "emapthyai",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:api": "node --watch apps/api/src/index.js",
+    "start:api": "node apps/api/src/index.js",
+    "test": "node --test",
+    "check": "node --check apps/api/src/index.js && node --check apps/api/src/node-adapter.js && node --check apps/api/src/social/cron.js && node --check apps/api/src/social/portal.js && node --check apps/api/src/social/runtime.js && node --check apps/api/src/social/x-oauth.js && node --check apps/api/src/social/x-write.js",
+    "eval:rewrites": "node scripts/eval-rewrites.js",
+    "eval:report": "node scripts/report-rewrite-eval.js",
+    "eval:run": "node scripts/run-rewrite-eval.js",
+    "eval:accounts:check": "node scripts/setup-eval-accounts.js",
+    "package:extension": "bash scripts/package-extension.sh",
+    "tokens:generate": "node scripts/generate-tokens.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "pg": "^8.23.0"
+  }
+}

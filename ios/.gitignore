@@ -1,0 +1,7 @@
+# Real KeyboardKit Pro license key — never commit this. Copy
+# KeyboardKitLicense.swift.example to KeyboardKitLicense.swift and fill in
+# the real key from keyboardkit.com.
+Shared/KeyboardKitLicense.swift
+
+# Xcode per-user state generated on open — never commit.
+xcuserdata/
