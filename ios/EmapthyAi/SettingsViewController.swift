@@ -1,7 +1,13 @@
 import UIKit
+import AVFoundation
 
 @MainActor
 final class SettingsViewController: UIViewController {
+    private var voiceRecorder: AVAudioRecorder?
+    private var voicePlayer: AVAudioPlayer?
+    private var voiceButton: UIButton?
+    private var voiceStatusLabel: UILabel?
+    private var voicePersona = "corporate"
     #if DEBUG
     private let testTextView = UITextView()
     private let testPlaceholder = "Type here, then select your text..."
@@ -47,6 +53,7 @@ final class SettingsViewController: UIViewController {
         )
         stack.addArrangedSubview(title)
         stack.addArrangedSubview(subtitle)
+        stack.addArrangedSubview(buildVoiceSection())
         #if DEBUG
         let testLabel = UILabel(); testLabel.text = "Test area"; testLabel.font = .systemFont(ofSize: 18, weight: .semibold)
         testTextView.font = .systemFont(ofSize: 15); testTextView.layer.borderColor = EmpathyTokens.colorBorder.cgColor; testTextView.layer.borderWidth = 1; testTextView.layer.cornerRadius = 8
@@ -146,6 +153,57 @@ final class SettingsViewController: UIViewController {
     }
 
     private func styleButton(_ button: UIButton, background: UIColor, titleColor: UIColor) { button.setTitleColor(titleColor, for: .normal); button.backgroundColor = background; button.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold); button.layer.cornerRadius = 10; button.heightAnchor.constraint(equalToConstant: 46).isActive = true }
+    private func buildVoiceSection() -> UIView {
+        let section = UIStackView(); section.axis = .vertical; section.spacing = 10
+        let title = scaledLabel("Voice relay", textStyle: .title2, size: 22, weight: .bold, color: EmpathyTokens.colorTextPrimary)
+        let body = scaledLabel("Record here in the main app, then EmapthyAi will transform and play it back. iOS does not allow keyboard extensions to record directly.", textStyle: .body, size: 17, color: EmpathyTokens.colorTextPrimary)
+        let personaControl = UISegmentedControl(items: ["Corporate", "Warm", "Personable"])
+        personaControl.selectedSegmentIndex = 0
+        personaControl.addTarget(self, action: #selector(didChangeVoicePersona(_:)), for: .valueChanged)
+        let button = UIButton(type: .system); button.setTitle("Record voice", for: .normal); styleButton(button, background: EmpathyTokens.colorBrandPrimary, titleColor: .white); button.addTarget(self, action: #selector(didTapVoice), for: .touchUpInside)
+        let status = scaledLabel("", textStyle: .footnote, size: 14, color: EmpathyTokens.colorTextSecondary)
+        voiceButton = button; voiceStatusLabel = status
+        [title, body, personaControl, button, status].forEach { section.addArrangedSubview($0) }
+        return section
+    }
+    @objc private func didChangeVoicePersona(_ control: UISegmentedControl) {
+        voicePersona = ["corporate", "warm", "personable"][control.selectedSegmentIndex]
+    }
+    @objc private func didTapVoice() {
+        if let recorder = voiceRecorder {
+            recorder.stop(); voiceRecorder = nil; voiceButton?.setTitle("Record voice", for: .normal)
+            let url = recorder.url
+            voiceStatusLabel?.text = "Processing voice…"
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                do {
+                    let result = try await RewriteAPI.relayVoice(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), audio: Data(contentsOf: url), mimeType: "audio/mp4", persona: self.voicePersona)
+                    try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+                    try AVAudioSession.sharedInstance().setActive(true)
+                    self.voicePlayer = try AVAudioPlayer(data: result.audio)
+                    self.voicePlayer?.play()
+                    self.voiceStatusLabel?.text = "Played transformed voice."
+                } catch { self.voiceStatusLabel?.text = "Voice relay failed: \(error.localizedDescription)" }
+                try? FileManager.default.removeItem(at: url)
+            }
+            return
+        }
+        AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
+            Task { @MainActor in
+                guard let self else { return }
+                guard granted else { self.voiceStatusLabel?.text = "Microphone access is required in Settings."; return }
+                do {
+                    let session = AVAudioSession.sharedInstance()
+                    try session.setCategory(.record, mode: .default, options: [.allowBluetooth])
+                    try session.setActive(true)
+                    let url = FileManager.default.temporaryDirectory.appendingPathComponent("voice-\(UUID().uuidString).m4a")
+                    let recorder = try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44_100, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue])
+                    guard recorder.record() else { throw NSError(domain: "EmapthyAiVoice", code: 1, userInfo: [NSLocalizedDescriptionKey: "The audio recorder did not start."]) }
+                    self.voiceRecorder = recorder; self.voiceButton?.setTitle("Stop and transform", for: .normal); self.voiceStatusLabel?.text = "Recording…"
+                } catch { self.voiceStatusLabel?.text = "Could not start recording: \(error.localizedDescription)" }
+            }
+        }
+    }
     @objc private func didTapOpenSettings() { guard let url = URL(string: UIApplication.openSettingsURLString) else { return }; UIApplication.shared.open(url) }
 
     #if DEBUG

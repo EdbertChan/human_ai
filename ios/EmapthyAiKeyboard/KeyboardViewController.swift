@@ -18,8 +18,6 @@ final class KeyboardViewController: KeyboardInputViewController {
     // /v1/personas is loaded once per keyboard session; until it answers,
     // the model keeps its locked defaults (Corporate-only).
     private var personaConfigLoaded = false
-    private var voiceRecorder: AVAudioRecorder?
-    private var voicePlayer: AVAudioPlayer?
     // Only used by EmapthyAiLayoutTests to know when the async KeyboardKit
     // Pro setup (network license check) has actually finished, since a
     // snapshot taken before that races the real render.
@@ -323,41 +321,10 @@ final class KeyboardViewController: KeyboardInputViewController {
     }
 
     private func toggleVoiceRecording() {
-        if voiceRecorder != nil { finishVoiceRecording(); return }
-        AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
-            Task { @MainActor in
-                guard let self else { return }
-                guard granted else { self.toolbarModel.setVoiceError("Microphone access is required."); return }
-                do {
-                    let session = AVAudioSession.sharedInstance()
-                    try session.setCategory(.record, mode: .spokenAudio, options: [.allowBluetooth])
-                    try session.setActive(true)
-                    let url = FileManager.default.temporaryDirectory.appendingPathComponent("voice-\(UUID().uuidString).m4a")
-                    let recorder = try AVAudioRecorder(url: url, settings: [AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44_100, AVNumberOfChannelsKey: 1, AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue])
-                    recorder.record()
-                    self.voiceRecorder = recorder
-                    self.toolbarModel.setRecordingVoice(true)
-                } catch { self.toolbarModel.setVoiceError("Could not start recording.") }
-            }
-        }
-    }
-
-    private func finishVoiceRecording() {
-        guard let recorder = voiceRecorder else { return }
-        recorder.stop()
-        voiceRecorder = nil
-        toolbarModel.setRecordingVoice(false)
-        let url = recorder.url
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            do {
-                let result = try await RewriteAPI.relayVoice(baseURL: RewriteSettings.apiURL(), token: RewriteSettings.apiToken(), distinctID: RewriteSettings.distinctID(), audio: Data(contentsOf: url), mimeType: "audio/mp4", persona: self.toolbarModel.voicePersonaID)
-                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
-                try AVAudioSession.sharedInstance().setActive(true)
-                self.voicePlayer = try AVAudioPlayer(data: result.audio)
-                self.voicePlayer?.play()
-            } catch { self.toolbarModel.setVoiceError("Voice relay failed.") }
-            try? FileManager.default.removeItem(at: url)
+        guard let url = URL(string: "emapthyai://voice") else { return }
+        extensionContext?.open(url) { [weak self] opened in
+            guard !opened else { return }
+            Task { @MainActor in self?.toolbarModel.setVoiceError("Open EmapthyAi to record voice.") }
         }
     }
     private func sendDraft() {
