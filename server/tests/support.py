@@ -41,6 +41,25 @@ class ObservedStream(httpx.AsyncByteStream):
         self.closed = True
 
 
+class CancellationStream(httpx.AsyncByteStream):
+    """Block initial audio until the consumer is cancelled."""
+
+    def __init__(self) -> None:
+        """Create observable iteration and closure events."""
+        self.started = anyio.Event()
+        self.closed = False
+
+    async def __aiter__(self) -> AsyncIterator[bytes]:
+        """Signal blocked iteration without producing audio."""
+        self.started.set()
+        await anyio.sleep_forever()
+        yield b""
+
+    async def aclose(self) -> None:
+        """Record provider response cleanup."""
+        self.closed = True
+
+
 async def post_with_provider(provider: AsyncElevenLabs, payload: dict[str, str]) -> httpx.Response:
     """Send one ASGI request through an injected provider client."""
     app.dependency_overrides[get_client] = lambda: provider

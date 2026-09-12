@@ -136,6 +136,10 @@ async def speech(
     except ApiError as error:
         await stack.aclose()
         raise HTTPException(status.HTTP_502_BAD_GATEWAY, SPEECH_FAILURE_DETAIL) from error
+    except anyio.get_cancelled_exc_class():
+        with anyio.CancelScope(shield=True):
+            await stack.aclose()
+        raise
 
     request_id = response.headers.get("request-id")
 
